@@ -17,7 +17,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Next.js 16 (App Router, Turbopack), React 19, TypeScript (`strict`)
 - Tailwind CSS v4 — конфиг CSS-first в `src/styles/` (`@theme`), файла `tailwind.config.*` нет и не нужен
 - Ultracite — пресет правил поверх Biome (линтер + форматтер). `biome.json` только подключает пресеты `ultracite/biome/core`, `react`, `next`; правила не ослаблять локально без обсуждения. ESLint и Prettier не использовать
-- Юнит-тесты: `bun test` + happy-dom + React Testing Library + jest-dom (setup в `test/`)
+- Юнит-тесты: Vitest (`vitest.config.mts`, Node-окружение) — только для чистых функций
 - Bun — единственный пакетный менеджер и раннер скриптов (`bun.lock`); `npm`/`pnpm`/`yarn` не использовать. Сам Next запускается на Node (поведение по умолчанию), `--bun` не добавлять
 - Анимации: позже, пакет `motion` (бывший Framer Motion, импорт из `motion/react`). Пока не установлен — не добавлять без решения
 
@@ -27,7 +27,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 bun install        # зависимости
 bun add <pkg>      # новая зависимость (-d для dev)
 bun run dev        # dev-сервер, http://localhost:3000
-bun run test       # юнит-тесты (bun test)
+bun run test       # юнит-тесты (vitest run)
 bun run lint       # ultracite check: линт + проверка форматирования
 bun run format     # ultracite fix: автоисправление и форматирование
 bun run build      # статическая сборка в out/ + проверка типов
@@ -48,7 +48,6 @@ src/
     globals.css           подключение Tailwind, базовые стили; импортируется в app/layout.tsx
     theme.css             дизайн-токены: CSS-переменные + @theme
   lib/                    утилиты, контент-данные (проекты, ссылки)
-test/                     setup тестов: dom.ts (happy-dom), setup.ts (jest-dom, cleanup)
 public/                   картинки и статика
 ```
 
@@ -88,11 +87,10 @@ public/                   картинки и статика
 
 ## Тесты
 
-- Каждая чистая функция (утилита, форматтер, преобразование данных) покрыта юнит-тестом.
-- Тест лежит рядом с тестируемым файлом и называется так же + `.test`: `src/lib/formatDate.ts` → `src/lib/formatDate.test.ts`, `src/ui-kit/Button.tsx` → `src/ui-kit/Button.test.tsx`. Отдельных папок `__tests__` нет.
-- Импорты из `bun:test` явно: `import { describe, expect, test } from "bun:test"`.
-- Компоненты — через React Testing Library: искать по роли/тексту (`getByRole`, `getByText`), проверять то, что видит пользователь, а не внутреннее состояние.
-- Async Server Components юнит-тестами не покрываются (не поддерживается RTL) — выносить логику в чистые функции и тестировать их.
+- Юнит-тестами покрываются только чистые функции (утилиты, форматтеры, преобразования данных) — каждая. Рендер компонентов не тестируется.
+- Тест лежит рядом с тестируемым файлом и называется так же + `.test`: `src/lib/formatDate.ts` → `src/lib/formatDate.test.ts`. Отдельных папок `__tests__` нет.
+- Импорты из `vitest` явно: `import { describe, expect, test } from "vitest"` (глобалы Vitest не включены).
+- Логику (вычисления, форматирование, фильтрация/сортировка данных) выносить из компонентов в чистые функции в `src/lib/` — так она тестируется.
 - Исправление бага начинается с теста, который этот баг воспроизводит.
 
 ## Git
@@ -101,6 +99,6 @@ public/                   картинки и статика
 - Push в `main` запрещён (и агенту, и людям) — `main` защищена на GitHub, изменения только через PR. Push своей ветки и открытие PR — тоже только после разрешения владельца.
 - Каждая задача — отдельная ветка от свежего `main`: `feat/<кратко>`, `fix/<кратко>`, `chore/<кратко>`, `docs/<кратко>`, `test/<кратко>` (kebab-case, например `feat/image-optimizer`).
 - Pre-commit хук — Lefthook (`lefthook.yml`): `ultracite fix` по staged-файлам, автоисправления сразу попадают в коммит, неисправимые ошибки блокируют коммит. Ставится при `bun install` (скрипт `prepare`). Тесты хук не запускает. `--no-verify` не использовать.
-- Тесты запускает агент: задача не считается выполненной и не показывается на ревью, пока `bun run lint && bun run test && bun run build` не зелёные. Новая/изменённая логика без тестов — тоже не выполнена.
+- Тесты запускает агент: задача не считается выполненной и не показывается на ревью, пока `bun run lint && bun run test && bun run build` не зелёные. Новая/изменённая чистая функция без теста — тоже не выполнена.
 - Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `style:`, `test:`.
 - Без AI-атрибуции: никаких `Co-Authored-By` и подписей «Generated with …» в коммитах и PR.
