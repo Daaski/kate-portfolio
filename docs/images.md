@@ -1,14 +1,15 @@
 # Картинки
 
-Свой пайплайн, без сторонних оптимизаторов: `bun run build` = `next build` + `scripts/optimize-images.ts`. Скрипт через `sharp` пишет рядом с каждой растровой картинкой в `out/` WebP-варианты `<имя>-w<ширина>.webp` под все ширины из `images.imageSizes`/`deviceSizes` (`next.config.ts`). Loader (`src/lib/image-loader.ts`, `images.loaderFile`) строит `srcset` на эти файлы той же функцией `optimizedImagePath`.
+Свой пайплайн, без сторонних оптимизаторов: `scripts/optimize-images.ts` — адаптер Next (`adapterPath` в `next.config.ts`), его `onBuildComplete` срабатывает в конце `next build`. Через `sharp` он пишет рядом с каждой растровой картинкой в `out/` WebP-варианты `<имя>-w<ширина>q<качество>.webp` под все ширины `images.imageSizes`/`deviceSizes` и качества `images.qualities` (итоговые, с дефолтами Next). Loader (`src/lib/image-loader.ts`, `images.loaderFile`) строит `srcset` на эти файлы той же функцией `optimizedImagePath`.
 
 - Только `next/image`, не `<img>`.
-- Предпочтительно статический импорт из `src/assets/` (`import cover from "@/assets/cover.jpg"`): размеры и blur-плейсхолдер (`placeholder="blur"`) Next подставляет сам. Строковый путь — для файлов из `public/`, с явными `width`/`height`.
+- Картинки лежат в `src/assets/` и подключаются статическим импортом (`import cover from "@/assets/cover.jpg"`): размеры и blur-плейсхолдер (`placeholder="blur"`) Next подставляет сам, а хеш в имени файла исключает конфликты WebP-вариантов.
+- `public/` — только если другого выхода нет: файлу нужен постоянный URL, который знают снаружи (например, `robots.txt` или файл для стороннего сервиса). Favicon и OG-картинки — файлами в `src/app/` (metadata files), не в `public/`.
 - Только локальные картинки: удалённый URL loader отклоняет с ошибкой.
 - Всегда `alt` (пустой `alt=""` — только для декоративных) и `sizes`, если картинка не фиксированной ширины.
 - Исходники — JPEG/PNG/WebP/AVIF в полном качестве, сжимать заранее не нужно. SVG отдаются как есть.
-- Ширины меняются только в `next.config.ts` — скрипт читает их оттуда.
-- В `bun run dev` вариантов нет — показываются оригиналы, это нормально.
+- Ширины и качества — дефолты Next 16 (качество 75). Менять — в `images` в `next.config.ts`, адаптер подхватит сам. Проп `quality` — только из `images.qualities`, иначе картинки нет (в dev Next предупредит).
+- В `bun run dev` вариантов нет: `images.unoptimized` в dev-фазе, показываются оригиналы без `srcset`.
 
 ## Как писать картинку в коде
 
@@ -24,13 +25,14 @@ import hero from "@/assets/hero.jpg";
   alt="Катя за работой в мастерской"
   className="h-auto w-full"
   fetchPriority="high"
+  loading="eager"
   placeholder="blur"
   sizes="100vw"
   src={hero}
 />
 ```
 
-`fetchPriority="high"` — только у одной картинки первого экрана; остальные грузятся лениво (по умолчанию). `priority` устарел в Next 16, `preload` не нужен.
+`fetchPriority="high"` + `loading="eager"` — только у одной картинки первого экрана; остальные грузятся лениво (по умолчанию). Без `loading="eager"` картинка остаётся `loading="lazy"` и начинает грузиться позже. `priority` устарел в Next 16, `preload` не нужен.
 
 **Карточка в сетке** — картинка заполняет блок с заданными пропорциями:
 
@@ -57,14 +59,16 @@ import hero from "@/assets/hero.jpg";
 
 `sizes` не нужен: Next сам возьмёт 64px для обычного экрана и 128px для ретины (`imageSizes`).
 
-**Файл из `public/`** — когда путь приходит строкой (например, из данных в `src/lib`):
+**Картинка из данных** (список проектов в `src/lib`) — импорт в файле данных, не строковый путь:
 
-```tsx
-<Image alt="Обложка проекта" height={600} src="/images/project.jpg" width={800} />
+```ts
+import cover from "@/assets/projects/garden.jpg";
+
+export const projects = [{ cover, title: "Сад" }];
 ```
 
-`width`/`height` обязательны — это пропорции, по которым резервируется место (без прыжков вёрстки), а не размер на экране. Blur-плейсхолдер работает только у статического импорта.
+В разметке — `src={project.cover}`, как в карточке выше.
 
 **Декоративная картинка** — фон, орнамент, не несёт смысла: `alt=""`.
 
-Не делать: `<img>` вместо `next/image`; удалённые URL; картинку переменной ширины без `sizes` (браузер скачает вариант под всю ширину экрана); `fetchPriority="high"` больше чем у одной картинки.
+Не делать: `<img>` вместо `next/image`; удалённые URL; картинки в `public/` со строковым путём; картинку переменной ширины без `sizes` (браузер скачает вариант под всю ширину экрана); `fetchPriority="high"` больше чем у одной картинки.
