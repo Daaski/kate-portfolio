@@ -5,6 +5,8 @@
 ```bash
 bun install
 bun run dev     # http://localhost:3000
+bun run test    # юнит-тесты
+bun run lint    # Biome
 bun run build   # статический сайт в out/
 ```
 

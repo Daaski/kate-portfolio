@@ -16,7 +16,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Next.js 16 (App Router, Turbopack), React 19, TypeScript (`strict`)
 - Tailwind CSS v4 — конфиг CSS-first в `src/styles/` (`@theme`), файла `tailwind.config.*` нет и не нужен
-- ESLint (`eslint-config-next`)
+- Biome — линтер и форматтер (`biome.json`: домены `next` и `react`, парсинг Tailwind-директив в CSS). ESLint и Prettier не использовать
+- Юнит-тесты: `bun test` + happy-dom + React Testing Library + jest-dom (setup в `test/`)
 - Bun — единственный пакетный менеджер и раннер скриптов (`bun.lock`); `npm`/`pnpm`/`yarn` не использовать. Сам Next запускается на Node (поведение по умолчанию), `--bun` не добавлять
 - Анимации: позже, пакет `motion` (бывший Framer Motion, импорт из `motion/react`). Пока не установлен — не добавлять без решения
 
@@ -26,13 +27,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 bun install        # зависимости
 bun add <pkg>      # новая зависимость (-d для dev)
 bun run dev        # dev-сервер, http://localhost:3000
-bun run lint       # ESLint
+bun run test       # юнит-тесты (bun test)
+bun run lint       # Biome: линт + проверка форматирования
+bun run format     # Biome: автоисправление и форматирование
 bun run build      # статическая сборка в out/ + проверка типов
 ```
 
 Скрипты всегда через `bun run`: `bun build` без `run` — это встроенный бандлер Bun, а не `next build`.
 
-Перед тем как считать задачу готовой: `bun run lint && bun run build` проходят без ошибок.
+Перед тем как считать задачу готовой: `bun run lint && bun run test && bun run build` проходят без ошибок.
 
 ## Структура
 
@@ -45,6 +48,7 @@ src/
     globals.css           подключение Tailwind, базовые стили; импортируется в app/layout.tsx
     theme.css             дизайн-токены: CSS-переменные + @theme
   lib/                    утилиты, контент-данные (проекты, ссылки)
+test/                     setup тестов: dom.ts (happy-dom), setup.ts (jest-dom, cleanup)
 public/                   картинки и статика
 ```
 
@@ -73,7 +77,17 @@ public/                   картинки и статика
 - Доступность: семантичные теги (`header`, `main`, `nav`, `section`), `alt` у картинок, видимый focus, достаточный контраст.
 - Новые зависимости — только если задачу нельзя решить парой строк или нативно.
 
+## Тесты
+
+- Каждая чистая функция (утилита, форматтер, преобразование данных) покрыта юнит-тестом.
+- Тест лежит рядом с тестируемым файлом и называется так же + `.test`: `src/lib/formatDate.ts` → `src/lib/formatDate.test.ts`, `src/ui-kit/Button.tsx` → `src/ui-kit/Button.test.tsx`. Отдельных папок `__tests__` нет.
+- Импорты из `bun:test` явно: `import { describe, expect, test } from "bun:test"`.
+- Компоненты — через React Testing Library: искать по роли/тексту (`getByRole`, `getByText`), проверять то, что видит пользователь, а не внутреннее состояние.
+- Async Server Components юнит-тестами не покрываются (не поддерживается RTL) — выносить логику в чистые функции и тестировать их.
+- Исправление бага начинается с теста, который этот баг воспроизводит.
+
 ## Git
 
-- Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `style:`.
+- Перед каждым коммитом: новые/изменённые чистые функции и компоненты имеют тесты, `bun run lint && bun run test && bun run build` зелёные. Коммит без тестов на новую логику или с красными тестами не делать.
+- Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `style:`, `test:`.
 - Без AI-атрибуции: никаких `Co-Authored-By` и подписей «Generated with …» в коммитах и PR.
