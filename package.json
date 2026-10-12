@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "prepare": "git config core.hooksPath .githooks",
     "test": "bun test",
     "lint": "biome check",
     "format": "biome check --write"

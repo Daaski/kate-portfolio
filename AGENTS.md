@@ -88,6 +88,9 @@ public/                   картинки и статика
 
 ## Git
 
+- `main` защищена: прямой push запрещён, изменения только через PR.
+- Каждая задача — отдельная ветка от свежего `main`: `feat/<кратко>`, `fix/<кратко>`, `chore/<кратко>`, `docs/<кратко>`, `test/<кратко>` (kebab-case, например `feat/image-optimizer`). Готово — push ветки и PR в `main`.
+- Pre-commit хук (`.githooks/pre-commit`) запускает `bun run lint` и `bun run test` и блокирует коммит при ошибке. Включается автоматически при `bun install` (скрипт `prepare` ставит `core.hooksPath`). `--no-verify` не использовать.
 - Перед каждым коммитом: новые/изменённые чистые функции и компоненты имеют тесты, `bun run lint && bun run test && bun run build` зелёные. Коммит без тестов на новую логику или с красными тестами не делать.
 - Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `style:`, `test:`.
 - Без AI-атрибуции: никаких `Co-Authored-By` и подписей «Generated with …» в коммитах и PR.

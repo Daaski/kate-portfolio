@@ -1,0 +1,5 @@
+#!/bin/sh
+# Blocks the commit if lint or unit tests fail. Enabled by `bun install` (prepare script).
+set -e
+bun run lint
+bun run test
