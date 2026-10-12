@@ -10,25 +10,29 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # kate-portfolio
 
-Сайт-портфолио. Полностью статический: `output: "export"`, `pnpm build` кладёт готовый HTML/CSS/JS в `out/`, хостится на любом статик-хостинге. Без бэкенда и БД.
+Сайт-портфолио. Полностью статический: `output: "export"`, `bun run build` кладёт готовый HTML/CSS/JS в `out/`, хостится на любом статик-хостинге. Без бэкенда и БД.
 
 ## Стек
 
 - Next.js 16 (App Router, Turbopack), React 19, TypeScript (`strict`)
 - Tailwind CSS v4 — конфиг CSS-first в `src/styles/` (`@theme`), файла `tailwind.config.*` нет и не нужен
 - ESLint (`eslint-config-next`)
-- pnpm — единственный пакетный менеджер, `npm`/`yarn` не использовать
+- Bun — единственный пакетный менеджер и раннер скриптов (`bun.lock`); `npm`/`pnpm`/`yarn` не использовать. Сам Next запускается на Node (поведение по умолчанию), `--bun` не добавлять
 - Анимации: позже, пакет `motion` (бывший Framer Motion, импорт из `motion/react`). Пока не установлен — не добавлять без решения
 
 ## Команды
 
 ```bash
-pnpm dev     # dev-сервер, http://localhost:3000
-pnpm lint    # ESLint
-pnpm build   # статическая сборка в out/ + проверка типов
+bun install        # зависимости
+bun add <pkg>      # новая зависимость (-d для dev)
+bun run dev        # dev-сервер, http://localhost:3000
+bun run lint       # ESLint
+bun run build      # статическая сборка в out/ + проверка типов
 ```
 
-Перед тем как считать задачу готовой: `pnpm lint && pnpm build` проходят без ошибок.
+Скрипты всегда через `bun run`: `bun build` без `run` — это встроенный бандлер Bun, а не `next build`.
+
+Перед тем как считать задачу готовой: `bun run lint && bun run build` проходят без ошибок.
 
 ## Структура
 
