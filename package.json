@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build && bun scripts/optimize-images.ts",
+    "build": "next build",
     "dev": "next dev",
     "format": "ultracite fix",
     "lint": "ultracite check",
     "prepare": "lefthook install",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
   "dependencies": {
     "next": "16.4.0",
