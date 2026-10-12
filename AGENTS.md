@@ -16,7 +16,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Next.js 16 (App Router, Turbopack), React 19, TypeScript (`strict`)
 - Tailwind CSS v4 — конфиг CSS-first в `src/styles/` (`@theme`), файла `tailwind.config.*` нет и не нужен
-- Biome — линтер и форматтер (`biome.json`: домены `next` и `react`, парсинг Tailwind-директив в CSS). ESLint и Prettier не использовать
+- Ultracite — пресет правил поверх Biome (линтер + форматтер). `biome.json` только подключает пресеты `ultracite/biome/core`, `react`, `next`; правила не ослаблять локально без обсуждения. ESLint и Prettier не использовать
 - Юнит-тесты: `bun test` + happy-dom + React Testing Library + jest-dom (setup в `test/`)
 - Bun — единственный пакетный менеджер и раннер скриптов (`bun.lock`); `npm`/`pnpm`/`yarn` не использовать. Сам Next запускается на Node (поведение по умолчанию), `--bun` не добавлять
 - Анимации: позже, пакет `motion` (бывший Framer Motion, импорт из `motion/react`). Пока не установлен — не добавлять без решения
@@ -28,8 +28,8 @@ bun install        # зависимости
 bun add <pkg>      # новая зависимость (-d для dev)
 bun run dev        # dev-сервер, http://localhost:3000
 bun run test       # юнит-тесты (bun test)
-bun run lint       # Biome: линт + проверка форматирования
-bun run format     # Biome: автоисправление и форматирование
+bun run lint       # ultracite check: линт + проверка форматирования
+bun run format     # ultracite fix: автоисправление и форматирование
 bun run build      # статическая сборка в out/ + проверка типов
 ```
 
@@ -88,9 +88,10 @@ public/                   картинки и статика
 
 ## Git
 
-- `main` защищена: прямой push запрещён, изменения только через PR.
-- Каждая задача — отдельная ветка от свежего `main`: `feat/<кратко>`, `fix/<кратко>`, `chore/<кратко>`, `docs/<кратко>`, `test/<кратко>` (kebab-case, например `feat/image-optimizer`). Готово — push ветки и PR в `main`.
-- Pre-commit хук (`.githooks/pre-commit`) запускает `bun run lint` и `bun run test` и блокирует коммит при ошибке. Включается автоматически при `bun install` (скрипт `prepare` ставит `core.hooksPath`). `--no-verify` не использовать.
-- Перед каждым коммитом: новые/изменённые чистые функции и компоненты имеют тесты, `bun run lint && bun run test && bun run build` зелёные. Коммит без тестов на новую логику или с красными тестами не делать.
+- Коммит — только с явного разрешения владельца репозитория. Агент вносит изменения, прогоняет проверки и останавливается: показывает, что сделал (`git status`, `git diff`), и ждёт ревью. Разрешение действует на один коммит, не на все последующие.
+- Push в `main` запрещён (и агенту, и людям) — `main` защищена на GitHub, изменения только через PR. Push своей ветки и открытие PR — тоже только после разрешения владельца.
+- Каждая задача — отдельная ветка от свежего `main`: `feat/<кратко>`, `fix/<кратко>`, `chore/<кратко>`, `docs/<кратко>`, `test/<кратко>` (kebab-case, например `feat/image-optimizer`).
+- Pre-commit хук — Lefthook (`lefthook.yml`): `ultracite fix` по staged-файлам, автоисправления сразу попадают в коммит, неисправимые ошибки блокируют коммит. Ставится при `bun install` (скрипт `prepare`). Тесты хук не запускает. `--no-verify` не использовать.
+- Тесты запускает агент: задача не считается выполненной и не показывается на ревью, пока `bun run lint && bun run test && bun run build` не зелёные. Новая/изменённая логика без тестов — тоже не выполнена.
 - Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `style:`, `test:`.
 - Без AI-атрибуции: никаких `Co-Authored-By` и подписей «Generated with …» в коммитах и PR.
