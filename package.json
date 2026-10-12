@@ -8,7 +8,7 @@
     "format": "ultracite fix",
     "lint": "ultracite check",
     "prepare": "lefthook install",
-    "test": "bun test"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "next": "16.4.0",
@@ -17,18 +17,15 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
-    "@happy-dom/global-registrator": "^21.0.1",
     "@tailwindcss/turbopack": "^4",
-    "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.3",
-    "@types/bun": "^1.4.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "lefthook": "2.2.1",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "ultracite": "8.0.0"
+    "ultracite": "8.0.0",
+    "vitest": "^5.0.4"
   },
   "packageManager": "bun@1.4.2"
 }
