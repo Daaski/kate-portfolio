@@ -1,0 +1,9 @@
+# Installed by `bun install` (prepare script). Tests are not run here:
+# the agent runs them before reporting a task as done (see AGENTS.md).
+pre-commit:
+  jobs:
+    - name: ultracite
+      # Must match every file type `ultracite check` lints, or unformatted files slip past the hook.
+      glob: "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,html,svg}"
+      run: bunx ultracite fix {staged_files}
+      stage_fixed: true

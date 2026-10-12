@@ -1,13 +1,14 @@
-import { afterEach, expect } from "bun:test";
-import * as matchers from "@testing-library/jest-dom/matchers";
+import { afterEach, type expect } from "bun:test";
+// Side-effect import: registers jest-dom matchers on Bun's global `expect`.
+import "@testing-library/jest-dom";
+import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 import { cleanup } from "@testing-library/react";
 
-expect.extend(matchers);
 afterEach(cleanup);
 
 declare module "bun:test" {
   interface Matchers<T>
-    extends matchers.TestingLibraryMatchers<
+    extends TestingLibraryMatchers<
       ReturnType<typeof expect.stringContaining>,
       T
     > {}
