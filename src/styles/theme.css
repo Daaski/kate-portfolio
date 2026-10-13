@@ -48,39 +48,45 @@
   --color-label-blue: var(--color-blue-350);
 
   /*
+   * Figma values that match Tailwind defaults use the Tailwind class;
+   * values that differ override the nearest Tailwind step.
+   *
    * Spacing: Figma spacing/4…80 is Tailwind's default 4px step
    * (--spacing: 0.25rem): 4 = p-1, 8 = p-2, 12 = p-3, 16 = p-4,
    * 24 = p-6, 32 = p-8, 40 = p-10, 64 = p-16, 80 = p-20.
    *
    * Radius: Figma radius/8 = rounded-lg, 16 = rounded-2xl,
-   * 24 = rounded-3xl, 40 = rounded-5xl, full = rounded-full.
+   * 24 = rounded-3xl, 40 = rounded-4xl, full = rounded-full.
    */
-  --radius-5xl: 2.5rem;
+  --radius-4xl: 2.5rem;
 
-  /* Figma shadow/shadow. */
+  /* Figma shadow/shadow: no Tailwind counterpart. */
   --shadow-base:
     0 1.63px 6.52px 0 hsla(210, 26.7%, 5.9%, 0.02),
     0 20px 80px 0 hsla(210, 26.7%, 5.9%, 0.05);
 
-  /* blur-* and backdrop-blur-*. Figma blur/progress-bar (0) = blur-none. */
-  --blur-layer-sm: 4px;
-  --blur-layer-md: 12px;
-  --blur-overlay-card: 40px;
-  --blur-overlay-card-mini: 10px;
+  /*
+   * Blur: Figma blur/layer-sm = blur-xs, layer-md = blur-md,
+   * overlay-card = backdrop-blur-2xl, overlay-card-mini = backdrop-blur-sm,
+   * progress-bar = blur-none.
+   */
+  --blur-sm: 10px;
 
   /*
-   * Typography: Figma text styles are built from Tailwind classes.
-   * Only what Tailwind lacks is a token: the 32px size and two tracking steps.
-   *   Heading/L  text-32 font-medium tracking-tight
+   * Typography: Figma text styles as Tailwind classes.
+   *   Heading/L  text-3xl font-medium tracking-tight
    *   Heading/M  text-xl font-medium tracking-snug
-   *   Body/L     text-lg leading-6.5 font-medium tracking-snug
+   *   Body/L     text-lg font-medium tracking-snug
    *   Body/S     text-sm tracking-subtle
    *   Label      text-sm font-medium tracking-subtle
    *   Button     text-sm font-semibold tracking-subtle
    *   Caption    text-xs font-medium
+   * Tailwind has no tracking between tight (-2.5%) and normal (0),
+   * so snug (-1%) and subtle (-0.5%) are added, not overridden.
    */
-  --text-32: 2rem;
-  --text-32--line-height: 2.5rem;
+  --text-3xl: 2rem;
+  --text-3xl--line-height: 2.5rem;
+  --text-lg--line-height: 1.625rem;
   --tracking-snug: -0.01em;
   --tracking-subtle: -0.005em;
 }
