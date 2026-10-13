@@ -72,7 +72,8 @@ public/                   только файлы с постоянным вне
 
 - Server Components по умолчанию. `"use client"` — только где нужны state, эффекты, браузерные API или анимации; client-граница как можно ниже по дереву.
 - Next-примитивы: `next/image` для картинок, `next/font` для шрифтов, `next/link` для внутренних ссылок, Metadata API для title/description/OG.
-- Стили — только классы Tailwind. Цвета, шрифты, отступы бренда — токены в `src/styles/theme.css`, не хардкод hex в разметке. CSS Modules / styled-components не использовать.
+- Стили — только классы Tailwind на токенах из `src/styles/theme.css`. Без кастомных решений: никаких arbitrary values (`bg-[#f5f5f5]`, `p-[13px]`), inline `style`, своих CSS-классов, CSS Modules / styled-components.
+- Любой цвет — всегда токен. Нужного цвета нет — сначала добавить `--color-<имя>` в `@theme` в `theme.css`, потом использовать класс (`bg-<имя>`, `text-<имя>`). Hex/rgb/hsl вне `theme.css` запрещены. То же для шрифтов, радиусов, отступов, теней, если стандартной шкалы Tailwind не хватает.
 - Имена файлов — kebab-case (требование Ultracite): `button.tsx`, `format-date.ts`. Компоненты — PascalCase в коде, named export. `page.tsx` / `layout.tsx` — default export (требование Next).
 - Импорты через алиас `@/*` (`@/ui-kit/button`), без длинных `../../`.
 - Без `any`. Пропсы типизировать через `type`.
