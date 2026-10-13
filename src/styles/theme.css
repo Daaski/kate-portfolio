@@ -28,67 +28,58 @@
   --color-bg-surface: var(--color-neutral-50);
   --color-bg-muted: var(--color-neutral-150);
   --color-bg-inverse: var(--color-neutral-950);
-  --color-text-primary: var(--color-neutral-950);
-  --color-text-secondary: var(--color-neutral-600);
-  --color-text-tertiary: var(--color-neutral-500);
-  --color-text-disabled: var(--color-neutral-400);
-  --color-text-inverse: var(--color-neutral-0);
+  --color-bg-overlay: hsla(210, 26.7%, 5.9%, 0.6);
+  --color-fg-primary: var(--color-neutral-950);
+  --color-fg-secondary: var(--color-neutral-600);
+  --color-fg-tertiary: var(--color-neutral-500);
+  --color-fg-quaternary: var(--color-neutral-200);
+  --color-fg-disabled: var(--color-neutral-400);
+  --color-fg-inverse: var(--color-neutral-0);
   --color-border-inverse: var(--color-neutral-0);
   --color-border-subtle: var(--color-neutral-100);
   --color-border-strong: var(--color-neutral-300);
   --color-border-focus: var(--color-blue-500);
-  --color-icon-primary: var(--color-neutral-950);
-  --color-icon-secondary: var(--color-neutral-500);
-  --color-icon-tertiary: var(--color-neutral-200);
-  --color-accent-gradient-start: var(--color-blue-400);
-  --color-accent-gradient-end: var(--color-blue-500);
-  --color-overlay-scrim: hsla(210, 26.7%, 5.9%, 0.6);
-  --color-label-pink: var(--color-pink-300);
-  --color-label-green: var(--color-green-300);
-  --color-label-blue: var(--color-blue-350);
+  --color-brand-gradient-start: var(--color-blue-400);
+  --color-brand-gradient-end: var(--color-blue-500);
+  --color-accent-pink: var(--color-pink-300);
+  --color-accent-green: var(--color-green-300);
+  --color-accent-blue: var(--color-blue-350);
 
   /*
    * Figma values that match Tailwind defaults use the Tailwind class;
-   * values that differ override the nearest Tailwind step.
+   * values that differ override the Tailwind token of the same name.
    *
    * Spacing: Figma spacing/4…80 is Tailwind's default 4px step
    * (--spacing: 0.25rem): 4 = p-1, 8 = p-2, 12 = p-3, 16 = p-4,
-   * 24 = p-6, 32 = p-8, 40 = p-10, 64 = p-16, 80 = p-20.
+   * 24 = p-6, 32 = p-8, 40 = p-10, 80 = p-20.
    *
    * Radius: Figma radius/8 = rounded-lg, 16 = rounded-2xl,
    * 24 = rounded-3xl, 40 = rounded-4xl, full = rounded-full.
+   *
+   * Blur: Figma blur-xs, blur-md and backdrop-blur-sm are Tailwind defaults.
    */
   --radius-4xl: 2.5rem;
 
-  /* Figma shadow/shadow: no Tailwind counterpart. */
-  --shadow-base:
+  --shadow-xl:
     0 1.63px 6.52px 0 hsla(210, 26.7%, 5.9%, 0.02),
     0 20px 80px 0 hsla(210, 26.7%, 5.9%, 0.05);
 
   /*
-   * Blur: Figma blur/layer-sm = blur-xs, layer-md = blur-md,
-   * overlay-card = backdrop-blur-2xl, overlay-card-mini = backdrop-blur-sm,
-   * progress-bar = blur-none.
-   */
-  --blur-sm: 10px;
-
-  /*
    * Typography: Figma text styles as Tailwind classes.
-   *   Heading/L  text-3xl font-medium tracking-tight
-   *   Heading/M  text-xl font-medium tracking-snug
-   *   Body/L     text-lg font-medium tracking-snug
-   *   Body/S     text-sm tracking-subtle
-   *   Label      text-sm font-medium tracking-subtle
-   *   Button     text-sm font-semibold tracking-subtle
-   *   Caption    text-xs font-medium
+   *   heading-lg  text-3xl font-medium tracking-tight
+   *   heading-md  text-xl font-medium tracking-snug
+   *   body-lg     text-lg font-medium tracking-snug
+   *   body-sm     text-sm
+   *   label       text-sm font-medium
+   *   button      text-sm font-semibold
+   *   caption     text-xs font-medium
    * Tailwind has no tracking between tight (-2.5%) and normal (0),
-   * so snug (-1%) and subtle (-0.5%) are added, not overridden.
+   * so snug (-1%) is added.
    */
   --text-3xl: 2rem;
   --text-3xl--line-height: 2.5rem;
   --text-lg--line-height: 1.625rem;
   --tracking-snug: -0.01em;
-  --tracking-subtle: -0.005em;
 }
 
 /* The font comes from next/font in app/layout.tsx. */
