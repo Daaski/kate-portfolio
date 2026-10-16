@@ -4,12 +4,12 @@ import type { ImageLoaderProps } from "next/image";
 
 export const RASTER_EXTENSION = /\.(?:avif|jpe?g|png|webp)$/i;
 
-/** What next/image itself uses when an <Image> has no quality prop. */
+/** Качество, которое next/image берёт сам, если у <Image> нет пропа quality. */
 export const DEFAULT_QUALITY = 75;
 
 /**
- * Path of the WebP variant that scripts/optimize-images.ts writes next to the
- * original image in out/. Non-raster images (SVG) are returned unchanged.
+ * Путь WebP-варианта, который scripts/optimize-images.ts кладёт рядом
+ * с оригиналом в out/. Нерастровые картинки (SVG) возвращаются без изменений.
  */
 export function optimizedImagePath(
   src: string,

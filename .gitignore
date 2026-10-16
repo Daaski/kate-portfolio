@@ -7,3 +7,6 @@
 .env*
 *.tsbuildinfo
 next-env.d.ts
+
+# agent specs and plans (local only)
+/docs/superpowers/

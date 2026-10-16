@@ -3,10 +3,10 @@ import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 export default function nextConfig(phase: string): NextConfig {
   return {
-    // Static export has no image server: the scripts/optimize-images.ts adapter
-    // writes WebP variants at the end of `next build`, and the loader points
-    // srcset at those files. Variants exist only after a build, so dev serves
-    // originals as-is.
+    // У static export нет сервера картинок: адаптер scripts/optimize-images.ts
+    // пишет WebP-варианты в конце `next build`, а loader направляет srcset
+    // на эти файлы. Варианты есть только после сборки, поэтому dev отдаёт
+    // оригиналы как есть.
     adapterPath: require.resolve("./scripts/optimize-images.ts"),
     images: {
       loader: "custom",
