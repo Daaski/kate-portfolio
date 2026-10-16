@@ -16,7 +16,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Next.js 16 (App Router, Turbopack), React 19, TypeScript (`strict`)
 - Tailwind CSS v4 — конфиг CSS-first в `src/styles/` (`@theme`), файла `tailwind.config.*` нет и не нужен
-- Ultracite — пресет правил поверх Biome (линтер + форматтер). `biome.json` только подключает пресеты `ultracite/biome/core`, `react`, `next`; правила не ослаблять локально без обсуждения. ESLint и Prettier не использовать
+- Ultracite — пресет правил поверх Biome (линтер + форматтер). `biome.json` подключает пресеты `ultracite/biome/core`, `react`, `next`; правила не ослаблять локально без обсуждения. Согласованное исключение одно: `noBarrelFile` выключен для `src/ui-kit/*/index.ts` (см. [docs/architecture.md](docs/architecture.md)). ESLint и Prettier не использовать
 - Юнит-тесты: Vitest (`vitest.config.mts`, jsdom) + React Testing Library — чистые функции и компоненты
 - Bun — единственный пакетный менеджер и раннер скриптов (`bun.lock`); `npm`/`pnpm`/`yarn` не использовать. Сам Next запускается на Node (поведение по умолчанию), `--bun` не добавлять
 - Анимации: позже, пакет `motion` (бывший Framer Motion, импорт из `motion/react`). Пока не установлен — не добавлять без решения
@@ -53,7 +53,7 @@ bun run build      # статическая сборка в out/ + провер�
 src/
   app/                    роутинг (App Router): layout, page, metadata
     <route>/_components/  секции, нужные только этой странице
-  ui-kit/                 UI-кит: базовые переиспользуемые компоненты (Button, Container, Heading…)
+  ui-kit/                 UI-кит: папка на компонент — button/{button.tsx, button.test.tsx, index.ts}
   styles/
     globals.css           подключение Tailwind, базовые стили; импортируется в app/layout.tsx
     theme.css             дизайн-токены в @theme
@@ -66,7 +66,7 @@ public/                   только файлы с постоянным вне
 
 - `src/app` — только роутинг и сборка страниц из компонентов. Папка `src/pages` запрещена: Next считает её Pages Router.
 - Папки с `_` (`_components`) Next исключает из роутинга. Компонент нужен на двух и больше страницах — переносится в `ui-kit/`.
-- `ui-kit/` — компонент на файл (`button.tsx` → `export function Button`), без знания о конкретных страницах и контенте; всё приходит через пропсы.
+- `ui-kit/` — каждый компонент в своей папке: `button/button.tsx` (`export function Button`), `button/button.test.tsx`, `button/index.ts` (named-реэкспорт). Импорт — через папку: `@/ui-kit/button`. Общего `ui-kit/index.ts` (barrel) нет. Компоненты без знания о конкретных страницах и контенте; всё приходит через пропсы.
 - Все стили — в `src/styles/`. Новый токен (цвет, шрифт, радиус, отступ) — в `theme.css`, не в компонентах.
 - Папки создаются, когда в них появляется первый файл, не заранее.
 
@@ -82,21 +82,26 @@ public/                   только файлы с постоянным вне
 
 - Server Components по умолчанию. `"use client"` — только где нужны state, эффекты, браузерные API или анимации; client-граница как можно ниже по дереву.
 - Next-примитивы: `next/image` для картинок, `next/font` для шрифтов, `next/link` для внутренних ссылок, Metadata API для title/description/OG.
-- Стили — только классы Tailwind на токенах из `src/styles/theme.css`. Без кастомных решений: никаких arbitrary values (`bg-[#f5f5f5]`, `p-[13px]`), inline `style`, своих CSS-классов, CSS Modules / styled-components.
+- Стили — только классы Tailwind на токенах из `src/styles/theme.css`. Без кастомных решений: никаких arbitrary values для дизайн-значений (`bg-[#f5f5f5]`, `p-[13px]`), inline `style`, своих CSS-классов, CSS Modules / styled-components.
+- Исключение — одноразовое техническое значение, которого нет в Tailwind и которое не относится к дизайн-системе (не цвет, шрифт, отступ, радиус, тень из Figma): его можно писать arbitrary value прямо в классе (`grid-rows-[0fr]` для анимации высоты), в `theme.css` не выносить. Повторилось во втором месте — вынести в токен. Почему значение понадобилось — комментарий рядом или запись в [docs/architecture.md](docs/architecture.md).
 - Любой цвет — всегда токен. Нужного цвета нет — сначала добавить `--color-<имя>` в `@theme` в `theme.css`, потом использовать класс (`bg-<имя>`, `text-<имя>`). Hex/rgb/hsl вне `theme.css` запрещены. То же для шрифтов, радиусов, отступов, теней, если стандартной шкалы Tailwind не хватает.
 - Источник токенов — [Figma, Variables и Styles](https://www.figma.com/design/5rmIvd1JhTzQoMBd9XVSmR/portfolio-website). Имя токена — из code syntax Figma; совпало с дефолтом Tailwind — значение берётся из Figma; значение уже есть в шкале Tailwind — используется класс Tailwind; значение отличается — переопределяется ближайшая ступень шкалы Tailwind, новое имя — только если переопределять нечего. Соответствие Figma → классы описано в комментариях в `theme.css`. Цвета в `theme.css` хранятся в `hsla()`. В разметке — семантические цвета (`bg-bg-surface`, `text-fg-secondary`), не примитивы (`neutral-*`).
 - Типографика — классы Tailwind: стиль из Figma собирается из `text-*`, `font-*`, `leading-*`, `tracking-*` (`text-xl font-medium tracking-snug`), составных токенов на стиль целиком нет. Значения нет в Tailwind — дописать токен в `theme.css` в своём неймспейсе: размер — `--text-<имя>` вместе с `--text-<имя>--line-height`, жирность — `--font-weight-<имя>`, межстрочный — `--leading-<имя>`, межбуквенный — `--tracking-<имя>`.
 - Имена файлов — kebab-case (требование Ultracite): `button.tsx`, `format-date.ts`. Компоненты — PascalCase в коде, named export. `page.tsx` / `layout.tsx` — default export (требование Next).
 - Импорты через алиас `@/*` (`@/ui-kit/button`), без длинных `../../`.
-- Без `any`. Пропсы типизировать через `type`.
+- Комментарии в коде — на русском. Идентификаторы, имена API, классы и технические термины — как есть.
+- Без `any`. Пропсы-объекты — `interface` (требование Ultracite, `useConsistentTypeDefinitions`); `type` — только для пересечений и объединений (`ComponentProps<"button"> & …`).
 - Контент (список проектов, тексты) — данные в `src/lib`, разметка их рендерит, не копипастит.
 - Mobile-first, адаптив обязателен. Тёмной темы нет.
-- Доступность: семантичные теги (`header`, `main`, `nav`, `section`), `alt` у картинок, видимый focus, достаточный контраст.
+- Доступность: семантичные теги (`header`, `main`, `nav`, `section`), непустой `alt` у каждой картинки (`alt=""` не используется), видимый focus, достаточный контраст.
 - Новые зависимости — только если задачу нельзя решить парой строк или нативно.
 
 ## Документация
 
 В `AGENTS.md` — только то, что нужно почти в каждой задаче. Подробные гайды по отдельным темам — в `docs/<тема>.md`, а здесь на их месте короткий указатель: когда читать и главные правила одной строкой. Раздел выносится, только если он большой и нужен не во всех задачах; мелкие разделы остаются здесь. Меняется поведение темы — обновляется её файл в `docs/`.
+
+- [docs/architecture.md](docs/architecture.md) — слои, структура UI-кита, приёмы компонентов и почему так. Читать перед работой с `src/ui-kit/` и перед архитектурными решениями. Любое новое решение или находка (выбрали X, отказались от Y, потому что Z) — записывается туда в той же задаче.
+- [docs/images.md](docs/images.md) — пайплайн картинок (см. «Картинки»).
 
 ## Скиллы агента
 
@@ -113,7 +118,7 @@ public/                   только файлы с постоянным вне
 - Юнит-тестами покрываются чистые функции (утилиты, форматтеры, преобразования данных) и компоненты (`ui-kit/`, `_components/`) — каждые; новая/изменённая функция или компонент без теста — задача не выполнена.
 - Компоненты — React Testing Library в jsdom. Проверяется то, что видят пользователь и скринридер: роли и доступные имена (`getByRole`), тексты, атрибуты (`href`, `alt`), наличие элементов в зависимости от пропсов. Классы Tailwind и внешний вид не проверяются: jsdom не применяет CSS — это браузерная проверка из «Проверки перед ревью».
 - Async Server Components Vitest не поддерживает — их проверяет только браузер.
-- Тест лежит рядом с тестируемым файлом и называется так же + `.test`: `src/lib/format-date.ts` → `src/lib/format-date.test.ts`, `src/ui-kit/button.tsx` → `src/ui-kit/button.test.tsx`. Отдельных папок `__tests__` нет.
+- Тест лежит рядом с тестируемым файлом и называется так же + `.test`: `src/lib/format-date.ts` → `src/lib/format-date.test.ts`, `src/ui-kit/button/button.tsx` → `src/ui-kit/button/button.test.tsx`. Тест импортирует соседний файл (`./button`), не `index.ts`. Отдельных папок `__tests__` нет.
 - Импорты из `vitest` явно: `import { describe, expect, test } from "vitest"` (глобалы Vitest не включены).
 - Логику (вычисления, форматирование, фильтрация/сортировка данных) выносить из компонентов в чистые функции в `src/lib/` — так она тестируется.
 - Исправление бага начинается с теста, который этот баг воспроизводит.

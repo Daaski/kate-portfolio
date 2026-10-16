@@ -1,12 +1,12 @@
 /*
- * Design tokens: Tailwind exposes each as a utility and a CSS variable.
- * Source of truth — Figma "portfolio-website", Variables and Styles.
- * Names follow the Figma code syntax; where Figma and Tailwind defaults
- * share a name, the Figma value wins. Colors are stored as hsla().
+ * Дизайн-токены: каждый Tailwind отдаёт как утилиту и CSS-переменную.
+ * Источник — Figma «portfolio-website», Variables и Styles.
+ * Имена — из code syntax Figma; если имя совпадает с дефолтом Tailwind,
+ * побеждает значение из Figma. Цвета хранятся в hsla().
  */
 
 @theme {
-  /* Primitives. Overrides Tailwind's neutral/blue/pink/green steps of the same name. */
+  /* Примитивы. Переопределяют одноимённые ступени neutral/blue/pink/green Tailwind. */
   --color-neutral-0: hsla(0, 0%, 100%, 1);
   --color-neutral-50: hsla(210, 22.2%, 96.5%, 1);
   --color-neutral-100: hsla(210, 18.7%, 93.7%, 1);
@@ -23,7 +23,7 @@
   --color-pink-300: hsla(350.9, 94.3%, 86.3%, 1);
   --color-green-300: hsla(78.4, 52.7%, 63.5%, 1);
 
-  /* Semantic colors — use these in markup, not primitives. */
+  /* Семантические цвета — в разметке используются они, а не примитивы. */
   --color-bg-page: var(--color-neutral-0);
   --color-bg-surface: var(--color-neutral-50);
   --color-bg-muted: var(--color-neutral-150);
@@ -44,19 +44,20 @@
   --color-accent-pink: var(--color-pink-300);
   --color-accent-green: var(--color-green-300);
   --color-accent-blue: var(--color-blue-350);
+  --color-gradient-grey: var(--color-neutral-100);
 
   /*
-   * Figma values that match Tailwind defaults use the Tailwind class;
-   * values that differ override the Tailwind token of the same name.
+   * Значения Figma, совпадающие с дефолтами Tailwind, — обычные классы Tailwind;
+   * отличающиеся переопределяют одноимённый токен Tailwind.
    *
-   * Spacing: Figma spacing/4…80 is Tailwind's default 4px step
+   * Отступы: spacing/4…80 из Figma — дефолтный шаг Tailwind 4px
    * (--spacing: 0.25rem): 4 = p-1, 8 = p-2, 12 = p-3, 16 = p-4,
    * 24 = p-6, 32 = p-8, 40 = p-10, 80 = p-20.
    *
-   * Radius: Figma radius/8 = rounded-lg, 16 = rounded-2xl,
+   * Радиусы: radius/8 из Figma = rounded-lg, 16 = rounded-2xl,
    * 24 = rounded-3xl, 40 = rounded-4xl, full = rounded-full.
    *
-   * Blur: Figma blur-xs, blur-md and backdrop-blur-sm are Tailwind defaults.
+   * Размытие: blur-xs, blur-md и backdrop-blur-sm из Figma — дефолты Tailwind.
    */
   --radius-4xl: 2.5rem;
 
@@ -65,7 +66,7 @@
     0 20px 80px 0 hsla(210, 26.7%, 5.9%, 0.05);
 
   /*
-   * Typography: Figma text styles as Tailwind classes.
+   * Типографика: текстовые стили Figma в классах Tailwind.
    *   heading-lg  text-3xl font-medium tracking-tight
    *   heading-md  text-xl font-medium tracking-snug
    *   body-lg     text-lg font-medium tracking-snug
@@ -73,8 +74,8 @@
    *   label       text-sm font-medium
    *   button      text-sm font-semibold
    *   caption     text-xs font-medium
-   * Tailwind has no tracking between tight (-2.5%) and normal (0),
-   * so snug (-1%) is added.
+   * В Tailwind нет tracking между tight (-2.5%) и normal (0),
+   * поэтому добавлен snug (-1%).
    */
   --text-3xl: 2rem;
   --text-3xl--line-height: 2.5rem;
@@ -82,7 +83,7 @@
   --tracking-snug: -0.01em;
 }
 
-/* The font comes from next/font in app/layout.tsx. */
+/* Шрифт подключается через next/font в app/layout.tsx. */
 @theme inline {
   --font-sans: var(--font-inter);
 }
