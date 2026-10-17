@@ -1,14 +1,15 @@
 import { render, screen, within } from "@testing-library/react";
 import { expect, test } from "vitest";
-import { ProjectCard } from "./project-card";
+import { ProjectCard } from ".";
 
 const props = {
-  description: "Спроектировала сервис поиска спешелти-кофеен.",
-  href: "/projects/mcoffee",
-  image: {
+  cover: {
     alt: "Экран приложения MCoffee",
     src: { height: 696, src: "/mcoffee.png", width: 320 },
   },
+  description: "Спроектировала сервис поиска спешелти-кофеен.",
+  href: "/projects/mcoffee",
+  sizes: "410px",
   tag: "Mobile-first",
   title: "Карта спешелти-кофеен",
 };
@@ -43,4 +44,10 @@ test("describes the link with the description", () => {
   expect(document.getElementById(descriptionId)?.textContent).toBe(
     "Спроектировала сервис поиска спешелти-кофеен."
   );
+});
+
+test("passes sizes to the cover", () => {
+  render(<ProjectCard {...props} />);
+  const cover = screen.getByRole("img", { name: "Экран приложения MCoffee" });
+  expect(cover.getAttribute("sizes")).toBe(props.sizes);
 });

@@ -6,8 +6,6 @@ interface CardProps {
   className?: string;
 }
 
-// Общая подложка всех карточек: колонка, первый блок сверху, последний снизу.
-// Отступы и размер задаёт вызывающий.
 export function Card({ className, children }: CardProps) {
   return (
     <div
