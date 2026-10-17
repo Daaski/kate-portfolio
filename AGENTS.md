@@ -32,7 +32,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Next.js 16 (App Router, Turbopack), React 19, TypeScript (`strict`)
 - Tailwind CSS v4 — конфиг CSS-first в `src/styles/` (`@theme`), файла `tailwind.config.*` нет и не нужен
-- Ultracite — пресет правил поверх Biome (линтер + форматтер). `biome.json` подключает пресеты `ultracite/biome/core`, `react`, `next`; правила не ослаблять локально без обсуждения. ESLint и Prettier не использовать
+- Ultracite — пресет правил поверх Biome (линтер + форматтер). `biome.json` подключает пресеты `ultracite/biome/core`, `react`, `next`, `vitest`; правила не ослаблять локально без обсуждения. ESLint и Prettier не использовать
 - Юнит-тесты: Vitest (`vitest.config.mts`, jsdom) + React Testing Library — чистые функции и компоненты
 - Bun — единственный пакетный менеджер и раннер скриптов (`bun.lock`); `npm`/`pnpm`/`yarn` не использовать. Сам Next запускается на Node (поведение по умолчанию), `--bun` не добавлять
 - Иконки: [Phosphor](https://phosphoricons.com/) (`@phosphor-icons/react`), их же использует Figma. Импорт поштучно: `import { StarFourIcon } from "@phosphor-icons/react/dist/ssr/StarFour"` — SSR-вариант без контекста работает и в Server, и в Client Components, а корневой barrel Next по умолчанию не оптимизирует. Цвет — `currentColor` (класс `text-*`), размер — `size-*`; у Phosphor поля 16/256 с каждой стороны, иконка из Figma без полей требует svg крупнее
@@ -147,7 +147,7 @@ public/                   только файлы с постоянным вне
 - Async Server Components Vitest не поддерживает — их проверяет только браузер.
 - Тест лежит рядом с тестируемым файлом и называется так же + `.test`: `src/lib/format-date.ts` → `src/lib/format-date.test.ts`, `src/ui-kit/button/index.tsx` → `src/ui-kit/button/index.test.tsx`. Тест компонента импортирует его из своей папки (`import { Button } from "."`). Отдельных папок `__tests__` нет.
 - Импорты из `vitest` явно: `import { describe, expect, test } from "vitest"` (глобалы Vitest не включены).
-- Проверки — внутри `test()`. Асинхронные тесты — через `async`/`await`, не `done`-колбэк. `describe` без глубокой вложенности. `.only` и `.skip` в коммит не попадают.
+- Проверки — внутри `test()`. Асинхронные тесты — через `async`/`await`, не `done`-колбэк. `describe` без глубокой вложенности. `.only` и `.skip` в коммит не попадают. Всё это ловит пресет `ultracite/biome/vitest`.
 - Логику (вычисления, форматирование, фильтрация/сортировка данных) выносить из компонентов в чистые функции — так она тестируется. Функция лежит рядом с единственным местом использования — в папке компонента (`utils.ts`, несколько — `utils/`); нужна в двух и больше местах — переносится в `src/lib/`. Как с компонентами и `ui-kit/`.
 - Исправление бага начинается с теста, который этот баг воспроизводит.
 
