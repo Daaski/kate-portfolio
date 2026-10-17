@@ -1,47 +1,28 @@
-import { projects } from "@/lib/projects";
-import { Button, buttonVariants } from "@/ui-kit/button";
-import { ContentCard } from "@/ui-kit/content-card";
+import { Contacts } from "@/app/_components/contacts";
+import { Greeting } from "@/app/_components/greeting";
+import { ProjectsCarousel } from "@/app/_components/projects-carousel";
+import { SLIDE_SIZES } from "@/app/_components/projects-carousel/utils";
+import { projects } from "@/constants/projects";
+import { routes } from "@/constants/routes";
 import { ProjectCard } from "@/ui-kit/project-card";
 
 export default function Home() {
   return (
-    <main className="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-10 lg:px-10">
-      <h1 className="font-medium text-3xl tracking-tight">Катя — портфолио</h1>
-      <section
-        aria-label="Проекты"
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {/* Первый ряд сетки на lg — три карточки, LCP может стать любая из них. */}
+    <main className="flex flex-col gap-10 py-10 lg:grid lg:h-dvh lg:grid-cols-12 lg:grid-rows-2 lg:gap-x-6 lg:gap-y-0 lg:overflow-hidden lg:py-0">
+      <Greeting className="lg:col-span-4 lg:col-start-2 lg:self-start lg:pt-20" />
+      <ProjectsCarousel className="lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1">
         {projects.map((project, index) => (
-          <ProjectCard eager={index < 3} key={project.href} {...project} />
+          <ProjectCard
+            {...project}
+            // На старте видны первая (по центру), вторая и последняя: лента зациклена.
+            eager={index < 2 || index === projects.length - 1}
+            href={routes.project(project.slug)}
+            key={project.slug}
+            sizes={SLIDE_SIZES}
+          />
         ))}
-      </section>
-      <ContentCard className="min-h-120 lg:max-w-2xl" tag="О проекте">
-        <p>
-          Компания оказывает услуги по охране труда и занимается обучением
-          сотрудников.
-        </p>
-        <p>
-          Раньше у неё был только раздел на сайте группы компаний.{" "}
-          <span className="text-fg-primary">
-            Задача — превратить его в самостоятельный сайт, который продаёт.
-          </span>
-        </p>
-        <p>
-          Я была единственным дизайнером в команде из маркетолога,
-          SEO-специалиста и разработчика.
-        </p>
-      </ContentCard>
-      <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-bg-muted p-6">
-        <Button>Следующий проект</Button>
-        <a
-          className={buttonVariants({ variant: "tertiary" })}
-          href="mailto:knnemova@yandex.ru"
-        >
-          knnemova@yandex.ru
-        </a>
-        <Button variant="overlay">Подробнее</Button>
-      </div>
+      </ProjectsCarousel>
+      <Contacts className="lg:col-span-4 lg:col-start-2 lg:row-start-2 lg:self-end lg:pb-10" />
     </main>
   );
 }

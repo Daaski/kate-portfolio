@@ -17,13 +17,11 @@ const adapter: NextAdapter = {
   name: "optimize-images",
   async onBuildComplete({ config, projectDir }) {
     const outDir = path.join(projectDir, "out");
-    // config.images уже объединён с дефолтами Next.
     const { deviceSizes, imageSizes, qualities = [] } = config.images;
     const widths = [...imageSizes, ...deviceSizes];
     // Loader запрашивает DEFAULT_QUALITY, если у <Image> нет пропа quality.
     const allQualities = [...new Set([DEFAULT_QUALITY, ...qualities])];
 
-    // `next build` пересоздаёт out/, поэтому вариантов от прошлой сборки там не бывает.
     const files = (await readdir(outDir, { recursive: true })).filter((file) =>
       RASTER_EXTENSION.test(file)
     );
@@ -38,7 +36,7 @@ const adapter: NextAdapter = {
           allQualities.map((quality) =>
             image
               .clone()
-              // Маленькие оригиналы не увеличиваются, но файл есть для каждой ширины.
+              // Файл пишется для каждой ширины, даже если оригинал меньше: иначе URL из srcset вёл бы в 404.
               .resize({ width, withoutEnlargement: true })
               .webp({ quality })
               .toFile(

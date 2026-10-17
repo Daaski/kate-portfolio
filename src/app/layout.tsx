@@ -15,7 +15,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html className={`${inter.variable} antialiased`} lang="ru">
-      <body className="bg-bg-page text-fg-primary">{children}</body>
+      <body className="bg-bg-page text-fg-primary">
+        <div className="mx-auto box-content max-w-300 px-4 lg:px-20">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

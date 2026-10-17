@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
-import { ContentCard } from "./content-card";
+import { ContentCard } from ".";
 
 test("renders the tag and the content", () => {
   render(

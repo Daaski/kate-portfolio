@@ -8,7 +8,6 @@ interface ContentCardProps {
   tag: string;
 }
 
-// gap-8 — чтобы тег не прилипал к высокому контенту; в макете между ними пустое место.
 export function ContentCard({ tag, children, className }: ContentCardProps) {
   return (
     <Card className={cx("gap-8 p-8", className)}>

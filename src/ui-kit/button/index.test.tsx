@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
-import { Button } from "./button";
+import { Button } from ".";
 
 describe("Button", () => {
   test("renders a button of type button by default", () => {
