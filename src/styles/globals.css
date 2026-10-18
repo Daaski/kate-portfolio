@@ -5,4 +5,10 @@
   :focus-visible {
     @apply outline-2 outline-border-focus outline-offset-2;
   }
+
+  /* Tailwind v4 вернул кнопкам cursor: default — возвращаем pointer, как советует upgrade guide. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
