@@ -133,7 +133,7 @@ export function ProjectsCarousel({
               aria-current={index === selected ? "true" : undefined}
               aria-label={label}
               className={cx(
-                "flex size-6 items-center justify-center rounded-full",
+                "flex size-6 items-center justify-center rounded-full motion-safe:transition-colors motion-safe:duration-300",
                 index === selected
                   ? "text-fg-primary"
                   : "text-fg-quaternary hover:text-fg-tertiary"

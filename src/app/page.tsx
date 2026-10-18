@@ -4,6 +4,7 @@ import { ProjectsCarousel } from "@/app/_components/projects-carousel";
 import { SLIDE_SIZES } from "@/app/_components/projects-carousel/utils";
 import { projects } from "@/constants/projects";
 import { routes } from "@/constants/routes";
+import { CursorLabel } from "@/ui-kit/cursor-label";
 import { ProjectCard } from "@/ui-kit/project-card";
 
 export default function Home() {
@@ -12,14 +13,15 @@ export default function Home() {
       <Greeting className="lg:col-span-4 lg:col-start-2 lg:self-start lg:pt-20" />
       <ProjectsCarousel className="lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1">
         {projects.map((project, index) => (
-          <ProjectCard
-            {...project}
-            // На старте видны первая (по центру), вторая и последняя: лента зациклена.
-            eager={index < 2 || index === projects.length - 1}
-            href={routes.project(project.slug)}
-            key={project.slug}
-            sizes={SLIDE_SIZES}
-          />
+          <CursorLabel key={project.slug} label="Подробнее">
+            <ProjectCard
+              {...project}
+              // На старте видны первая (по центру), вторая и последняя: лента зациклена.
+              eager={index < 2 || index === projects.length - 1}
+              href={routes.project(project.slug)}
+              sizes={SLIDE_SIZES}
+            />
+          </CursorLabel>
         ))}
       </ProjectsCarousel>
       <Contacts className="lg:col-span-4 lg:col-start-2 lg:row-start-2 lg:self-end lg:pb-10" />
