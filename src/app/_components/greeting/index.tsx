@@ -1,12 +1,6 @@
-import { cx } from "class-variance-authority";
-
-interface GreetingProps {
-  className?: string;
-}
-
-export function Greeting({ className }: GreetingProps) {
+export function Greeting() {
   return (
-    <div className={cx("flex flex-col gap-4", className)}>
+    <div className="flex flex-col gap-4">
       <h1 className="font-medium text-3xl tracking-tight">Привет</h1>
       <p className="text-fg-tertiary text-sm">
         Меня зовут{" "}
