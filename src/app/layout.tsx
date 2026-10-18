@@ -9,14 +9,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   description: "Портфолио Кати",
-  title: "Катя — портфолио",
+  title: { default: "Катя — портфолио", template: "%s — Катя" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html className={`${inter.variable} antialiased`} lang="ru">
       <body className="bg-bg-page text-fg-primary">
-        <div className="mx-auto box-content max-w-300 px-4 lg:px-20">
+        <div className="mx-auto box-content max-w-7xl px-4 lg:px-20">
           {children}
         </div>
       </body>

@@ -1,14 +1,9 @@
-import { cx } from "class-variance-authority";
 import { contacts } from "@/constants/contacts";
 import { buttonVariants } from "@/ui-kit/button";
 
-interface ContactsProps {
-  className?: string;
-}
-
-export function Contacts({ className }: ContactsProps) {
+export function Contacts() {
   return (
-    <ul className={cx("flex gap-6", className)}>
+    <ul className="flex gap-6">
       {contacts.map((contact) => (
         <li
           className="flex flex-1 flex-col items-start gap-2"

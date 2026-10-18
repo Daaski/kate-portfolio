@@ -6,7 +6,6 @@ import sfera from "@/assets/projects/sfera.png";
 export interface Project {
   cover: { alt: string; src: StaticImageData };
   description: string;
-  /** Страниц кейсов пока нет. */
   slug: string;
   tag: string;
   title: string;
