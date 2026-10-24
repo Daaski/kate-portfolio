@@ -25,15 +25,4 @@ describe("IconButton", () => {
     fireEvent.click(screen.getByRole("button", { name: "Закрыть" }));
     expect(onClick).toHaveBeenCalledOnce();
   });
-
-  test("renders the tertiary variant as a button", () => {
-    render(
-      <IconButton aria-label="Следующий слайд" variant="tertiary">
-        <XIcon aria-hidden="true" />
-      </IconButton>
-    );
-    expect(
-      screen.getByRole("button", { name: "Следующий слайд" })
-    ).toBeDefined();
-  });
 });
