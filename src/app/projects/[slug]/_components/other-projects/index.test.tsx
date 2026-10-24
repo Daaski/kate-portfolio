@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { expect, test } from "vitest";
-import { projects } from "@/constants/projects";
+import { projects } from "@/constants/cases/projects";
 import { OtherProjects } from ".";
 
 test("is a region named by its heading", () => {

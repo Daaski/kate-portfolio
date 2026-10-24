@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CaseHeader } from "@/app/projects/[slug]/_components/case-header";
+import {
+  CaseSlides,
+  SlideView,
+} from "@/app/projects/[slug]/_components/case-slides";
 import { CloseLink } from "@/app/projects/[slug]/_components/close-link";
+import { NextProject } from "@/app/projects/[slug]/_components/next-project";
+import { NextSlideButton } from "@/app/projects/[slug]/_components/next-slide-button";
 import { OtherProjects } from "@/app/projects/[slug]/_components/other-projects";
-import { projects } from "@/constants/projects";
+import { ScrollProgress } from "@/app/projects/[slug]/_components/scroll-progress";
+import { nextProject, projects } from "@/constants/cases/projects";
+import { routes } from "@/constants/routes";
 import { SidebarLayout } from "@/widgets/sidebar-layout";
 
 // Static export: страницы только для известных проектов, остальные адреса — 404.
@@ -34,13 +42,27 @@ export default async function ProjectPage({
 }: PageProps<"/projects/[slug]">) {
   const { slug } = await params;
   const project = findProject(slug);
+  const next = nextProject(slug);
 
-  // Контента кейса пока нет — отдельная задача, children появятся с ним.
   return (
-    <SidebarLayout
-      action={<CloseLink />}
-      bottom={<OtherProjects currentSlug={slug} />}
-      top={<CaseHeader {...project} />}
-    />
+    <>
+      <ScrollProgress />
+      <SidebarLayout
+        action={<CloseLink />}
+        bottom={<OtherProjects currentSlug={slug} />}
+        end={
+          <NextProject href={routes.project(next.slug)}>
+            <SlideView slide={next.groups[0].slides[0]} />
+          </NextProject>
+        }
+        top={<CaseHeader {...project} />}
+      >
+        {/* pt-20 — слайды начинаются на одной линии с шапкой (Figma: carousel/sections y=80). */}
+        <div className="flex flex-col gap-4 lg:pt-20">
+          <CaseSlides accent={project.accent} groups={project.groups} />
+          <NextSlideButton />
+        </div>
+      </SidebarLayout>
+    </>
   );
 }

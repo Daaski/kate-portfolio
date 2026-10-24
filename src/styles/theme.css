@@ -47,6 +47,16 @@
   --color-gradient-grey: var(--color-neutral-100);
 
   /*
+   * Центры свечения SectionLabel — стили gradient/blue|pink|green в Figma:
+   * радиальный градиент от этого цвета (50%) к accent-* того же проекта (100%).
+   * Имена — по акценту проекта и имени стиля в Figma, а не по оттенку: blue — персиковый, pink — голубой,
+   * так задумано, не «исправлять».
+   */
+  --color-gradient-blue: hsla(34.2, 100%, 85.9%, 1);
+  --color-gradient-pink: hsla(205.4, 100%, 84.7%, 1);
+  --color-gradient-green: hsla(56.8, 100%, 81.4%, 1);
+
+  /*
    * Значения Figma, совпадающие с дефолтами Tailwind, — обычные классы Tailwind;
    * отличающиеся переопределяют одноимённый токен Tailwind.
    *
@@ -57,9 +67,15 @@
    * Радиусы: radius/8 из Figma = rounded-lg, 16 = rounded-2xl,
    * 24 = rounded-3xl, 40 = rounded-4xl, full = rounded-full.
    *
-   * Размытие: blur-xs, blur-md и backdrop-blur-sm из Figma — дефолты Tailwind.
+   * Размытие: в CSS Figma отдаёт половину radius эффекта — blur-xs (radius 4) = 2px,
+   * blur-md (12) = 6px, backdrop-blur/xs (8) = 4px. backdrop-blur-* без своего токена
+   * берёт --blur-*, поэтому --backdrop-blur-xs задан отдельно.
    */
   --radius-4xl: 2.5rem;
+
+  --blur-xs: 2px;
+  --blur-md: 6px;
+  --backdrop-blur-xs: 4px;
 
   --shadow-xl:
     0 1.63px 6.52px 0 hsla(210, 26.7%, 5.9%, 0.02),
