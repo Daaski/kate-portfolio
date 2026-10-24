@@ -52,14 +52,19 @@ export function CursorLabel({ label, children }: CursorLabelProps) {
               aria-hidden="true"
               // difference: белая плашка инвертирует всё под собой, тёмный текст почти не меняет — буквы
               // показывают исходные цвета. Вариант overlay не подходит: полупрозрачный тёмный фон не инвертирует.
+              // Появление: starting:scale-0 — стартовое значение при монтировании. Переход только на scale:
+              // translate ведёт плашку за курсором, с переходом она бы отставала.
               className={buttonVariants({
                 className:
-                  "pointer-events-none fixed top-0 left-0 z-50 -translate-x-1/2 -translate-y-1/2 bg-bg-page px-3 font-medium text-fg-primary text-xs mix-blend-difference",
+                  "pointer-events-none fixed top-0 left-0 z-50 starting:scale-0 bg-bg-page px-3 font-medium text-fg-primary text-xs mix-blend-difference motion-safe:transition-[scale] motion-safe:duration-300",
                 variant: null,
               })}
               // Координаты курсора — не дизайн-значение, классом их не задать.
-              // translate (Tailwind) и transform — разные CSS-свойства, складываются.
-              style={{ transform: `translate(${point.x}px, ${point.y}px)` }}
+              // Свойство translate, а не transform: браузер масштабирует до translate, но после transform —
+              // смещение в transform сжалось бы вместе с плашкой, и она вылетала бы из угла окна.
+              style={{
+                translate: `calc(${point.x}px - 50%) calc(${point.y}px - 50%)`,
+              }}
             >
               {label}
             </span>,
