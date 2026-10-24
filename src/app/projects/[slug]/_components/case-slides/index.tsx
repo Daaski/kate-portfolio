@@ -70,13 +70,11 @@ export function CaseSlides({ accent, groups }: CaseSlidesProps) {
               {group.label}
             </h2>
             {group.slides.map((slide, slideIndex) => (
-              // data-slide — цель стрелки «Следующий слайд», scroll-mt-20 — верх слайда на 80px.
-              <div className="scroll-mt-20" data-slide key={slideKey(slide)}>
-                <SlideView
-                  eager={groupIndex === 0 && slideIndex === 0}
-                  slide={slide}
-                />
-              </div>
+              <SlideView
+                eager={groupIndex === 0 && slideIndex === 0}
+                key={slideKey(slide)}
+                slide={slide}
+              />
             ))}
           </section>
         );

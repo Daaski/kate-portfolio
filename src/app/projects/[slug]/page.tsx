@@ -7,7 +7,6 @@ import {
 } from "@/app/projects/[slug]/_components/case-slides";
 import { CloseLink } from "@/app/projects/[slug]/_components/close-link";
 import { NextProject } from "@/app/projects/[slug]/_components/next-project";
-import { NextSlideButton } from "@/app/projects/[slug]/_components/next-slide-button";
 import { OtherProjects } from "@/app/projects/[slug]/_components/other-projects";
 import { ScrollProgress } from "@/app/projects/[slug]/_components/scroll-progress";
 import { nextProject, projects } from "@/constants/cases/projects";
@@ -58,9 +57,8 @@ export default async function ProjectPage({
         top={<CaseHeader {...project} />}
       >
         {/* pt-20 — слайды начинаются на одной линии с шапкой (Figma: carousel/sections y=80). */}
-        <div className="flex flex-col gap-4 lg:pt-20">
+        <div className="lg:pt-20">
           <CaseSlides accent={project.accent} groups={project.groups} />
-          <NextSlideButton />
         </div>
       </SidebarLayout>
     </>
