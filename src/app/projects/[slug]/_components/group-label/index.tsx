@@ -16,12 +16,11 @@ export function GroupLabel({ accent, labels }: GroupLabelProps) {
 
   useEffect(() => {
     const update = () => {
-      // Обёртка h-0 — меряется сама пилюля: группа та, чей слайд под её серединой.
-      const pill = label.current?.firstElementChild;
-      if (!pill) {
+      // Группа та, чей слайд под серединой лейбла.
+      if (!label.current) {
         return;
       }
-      const { top, bottom } = pill.getBoundingClientRect();
+      const { top, bottom } = label.current.getBoundingClientRect();
       const groups = [...document.querySelectorAll("[data-group]")];
       setIndex(
         currentGroupIndex(
@@ -35,17 +34,19 @@ export function GroupLabel({ accent, labels }: GroupLabelProps) {
   }, []);
 
   return (
-    // Один лейбл на все группы: липнет всю колонку и меняет текст, когда под него приезжает слайд
+    // Один лейбл на все группы: липнет над слайдами и меняет текст, когда под него приезжает слайд
     // другой группы. Заголовки групп для скринридера — h2 в секциях, этот лейбл — только вид.
-    // Не занимает места (h-0, -mb-4 гасит gap колонки) и лежит поверх слайда: translate-y-4 —
-    // на 16px ниже его верха, top-20 + 16 = 96px от верха экрана, как в Figma. На мобилке шапки
-    // над слайдами нет — лейбл ближе к верху: top-4 + 16 = 32px.
-    <div
-      aria-hidden="true"
-      className="sticky top-4 z-10 -mb-4 flex h-0 translate-y-4 items-start justify-center lg:top-20"
-      ref={label}
-    >
-      <SectionLabel accent={accent}>{labels[index]}</SectionLabel>
+    // Слой absolute не занимает места и задаёт, докуда лейбл липнет: inset-y-4 — лейбл на 16px ниже
+    // верха первого слайда и останавливается в 16px от низа последнего. lg:top-24 = 96px от верха
+    // экрана, как в Figma; на мобилке шапки над слайдами нет — лейбл ближе к верху: top-8 = 32px.
+    <div className="pointer-events-none absolute inset-x-0 inset-y-4 z-10">
+      <div
+        aria-hidden="true"
+        className="sticky top-8 flex justify-center lg:top-24"
+        ref={label}
+      >
+        <SectionLabel accent={accent}>{labels[index]}</SectionLabel>
+      </div>
     </div>
   );
 }
