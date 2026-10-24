@@ -2,7 +2,7 @@ import { Contacts } from "@/app/_components/contacts";
 import { Greeting } from "@/app/_components/greeting";
 import { ProjectsCarousel } from "@/app/_components/projects-carousel";
 import { SLIDE_SIZES } from "@/app/_components/projects-carousel/utils";
-import { projects } from "@/constants/projects";
+import { projects } from "@/constants/cases/projects";
 import { routes } from "@/constants/routes";
 import { CursorLabel } from "@/ui-kit/cursor-label";
 import { ProjectCard } from "@/ui-kit/project-card";

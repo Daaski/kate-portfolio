@@ -4,6 +4,7 @@ interface SidebarLayoutProps {
   action?: ReactNode;
   bottom: ReactNode;
   children?: ReactNode;
+  end?: ReactNode;
   top: ReactNode;
 }
 
@@ -12,6 +13,7 @@ export function SidebarLayout({
   action,
   bottom,
   children,
+  end,
 }: SidebarLayoutProps) {
   return (
     // top и bottom делят одну ячейку грида: прижаты к её краям и прилипают к краям экрана,
@@ -31,8 +33,12 @@ export function SidebarLayout({
           </div>
         ) : null}
       </div>
-      <div className="lg:col-span-6 lg:col-start-7 lg:row-start-1">
+      {/* end — после контента: на lg в той же колонке под children (левая колонка остаётся липкой),
+          на мобилке — после bottom (order-1; action ещё дальше — order-last). Для этого обёртка
+          колонки на мобилке растворяется (contents). Порядок в DOM — children, end, bottom. */}
+      <div className="max-lg:contents lg:col-span-6 lg:col-start-7 lg:row-start-1 lg:flex lg:flex-col">
         {children}
+        {end ? <div className="max-lg:order-1">{end}</div> : null}
       </div>
       <div className="lg:sticky lg:bottom-0 lg:col-span-4 lg:col-start-2 lg:row-start-1 lg:self-end lg:pb-10">
         {bottom}

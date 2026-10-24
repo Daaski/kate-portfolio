@@ -23,3 +23,12 @@ test("reads the action right after top", () => {
   );
   expect(screen.getByRole("main").textContent).toBe("ВерхДействиеКонтентНиз");
 });
+
+test("reads the end after the content and before bottom", () => {
+  render(
+    <SidebarLayout bottom={<p>Низ</p>} end={<p>Конец</p>} top={<p>Верх</p>}>
+      <p>Контент</p>
+    </SidebarLayout>
+  );
+  expect(screen.getByRole("main").textContent).toBe("ВерхКонтентКонецНиз");
+});

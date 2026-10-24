@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { projects } from "@/constants/projects";
+import { projects } from "@/constants/cases/projects";
 import { routes } from "@/constants/routes";
 import { CursorLabel } from "@/ui-kit/cursor-label";
 import { ProjectCardMini } from "@/ui-kit/project-card-mini";
