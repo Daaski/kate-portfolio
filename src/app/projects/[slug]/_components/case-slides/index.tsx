@@ -20,9 +20,11 @@ export function SlideView({ slide, eager = false }: SlideViewProps) {
     return (
       // Chrome пишет в Issues «Lazy-loaded images should have explicit dimensions»: h-auto перебивает height.
       // Сдвига вёрстки нет — пропорции берутся из атрибутов width/height.
+      // rounded-2xl: слайды выгружены из Figma с серым фоном за скруглёнными углами карточки —
+      // обрезаем их тем же радиусом, что у Card.
       <Image
         alt={slide.image.alt}
-        className="h-auto w-full"
+        className="h-auto w-full rounded-2xl"
         fetchPriority={eager ? "high" : undefined}
         loading={eager ? "eager" : "lazy"}
         sizes={SLIDE_SIZES}
@@ -51,7 +53,8 @@ export function CaseSlides({ accent, groups }: CaseSlidesProps) {
   const id = useId();
 
   return (
-    <>
+    // relative — границы слоя GroupLabel: лейбл липнет, пока на экране слайды.
+    <div className="relative flex flex-col gap-4">
       <GroupLabel accent={accent} labels={groups.map((group) => group.label)} />
       {groups.map((group, groupIndex) => {
         const headingId = `${id}-${groupIndex}`;
@@ -78,6 +81,6 @@ export function CaseSlides({ accent, groups }: CaseSlidesProps) {
           </section>
         );
       })}
-    </>
+    </div>
   );
 }

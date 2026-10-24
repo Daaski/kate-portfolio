@@ -10,7 +10,7 @@ export const buttonVariants = cva(
         overlay:
           "bg-bg-overlay px-3 font-medium text-fg-inverse text-xs backdrop-blur-xs",
         secondary:
-          "bg-bg-page px-3 font-semibold text-fg-tertiary text-sm hover:text-fg-primary",
+          "bg-bg-surface px-3 font-semibold text-fg-tertiary text-sm hover:text-fg-primary",
         tertiary: "font-medium text-fg-primary text-sm hover:underline",
       },
     },
