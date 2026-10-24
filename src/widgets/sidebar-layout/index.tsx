@@ -27,8 +27,10 @@ export function SidebarLayout({
           // Мобилка: order-last ставит action в конец стопки, sticky держит его у низа экрана.
           // Место в потоке он занимает сам — последний блок не перекрыт. В DOM — сразу после
           // top, поэтому в порядке Tab идёт рано.
+          // z-10: без него позиционированные блоки контента (relative-карточки, sticky) — позже
+          // в DOM и рисуются поверх, action то пропадает, то появляется при прокрутке.
           // -mr-2: по Figma action в 16px от колонки контента, а край колонки — в 24 (gap-x-6).
-          <div className="max-lg:sticky max-lg:bottom-8 max-lg:order-last max-lg:self-center lg:-mr-2 lg:self-start lg:justify-self-end">
+          <div className="max-lg:sticky max-lg:bottom-8 max-lg:z-10 max-lg:order-last max-lg:self-center lg:-mr-2 lg:self-start lg:justify-self-end">
             {action}
           </div>
         ) : null}
