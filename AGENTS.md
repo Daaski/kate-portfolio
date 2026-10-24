@@ -36,7 +36,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Юнит-тесты: Vitest (`vitest.config.mts`, jsdom) + React Testing Library — чистые функции и компоненты
 - Bun — единственный пакетный менеджер и раннер скриптов (`bun.lock`); `npm`/`pnpm`/`yarn` не использовать. Сам Next запускается на Node (поведение по умолчанию), `--bun` не добавлять
 - Иконки: [Phosphor](https://phosphoricons.com/) (`@phosphor-icons/react`), их же использует Figma. Импорт поштучно: `import { StarFourIcon } from "@phosphor-icons/react/dist/ssr/StarFour"` — SSR-вариант без контекста работает и в Server, и в Client Components, а корневой barrel Next по умолчанию не оптимизирует. Цвет — `currentColor` (класс `text-*`), размер — `size-*`; у Phosphor поля 16/256 с каждой стороны, иконка из Figma без полей требует svg крупнее
-- Анимации: позже, пакет `motion` (бывший Framer Motion, импорт из `motion/react`). Пока не установлен — не добавлять без решения
+- Анимации, которые не сделать на CSS: пакет `motion` (бывший Framer Motion, импорт из `motion/react`)
 
 ## Команды
 

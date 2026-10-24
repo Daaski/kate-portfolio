@@ -1,9 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { domAnimation, LazyMotion, useReducedMotion } from "motion/react";
+import { span as MotionSpan } from "motion/react-m";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { onScrollFrame } from "@/lib/on-scroll-frame";
 import { SectionLabel, type SectionLabelAccent } from "@/ui-kit/section-label";
 import { currentGroupIndex } from "./utils";
+
+// 300 мс и кривая — как у duration-300 Tailwind в остальных переходах сайта.
+const transition = { duration: 0.3, ease: [0.4, 0, 0.2, 1] } as const;
 
 interface GroupLabelProps {
   accent: SectionLabelAccent;
@@ -12,7 +17,18 @@ interface GroupLabelProps {
 
 export function GroupLabel({ accent, labels }: GroupLabelProps) {
   const [index, setIndex] = useState(0);
+  const [width, setWidth] = useState<number>();
   const label = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
+
+  // ResizeObserver, а не замер при смене лейбла: после загрузки шрифта текст тоже меняет ширину.
+  const measure = useCallback((node: HTMLSpanElement) => {
+    const observer = new ResizeObserver(([entry]) =>
+      setWidth(entry.contentRect.width)
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const update = () => {
@@ -45,7 +61,28 @@ export function GroupLabel({ accent, labels }: GroupLabelProps) {
         className="sticky top-8 flex justify-center lg:top-24"
         ref={label}
       >
-        <SectionLabel accent={accent}>{labels[index]}</SectionLabel>
+        <SectionLabel accent={accent}>
+          {/* Элемент из motion/react-m + domAnimation вместо motion.span: нужна только анимация
+              значения, без жестов, drag и layout — JS страницы на ~15 КБ gzip меньше. */}
+          <LazyMotion features={domAnimation}>
+            {/* Анимируется настоящая width, а не layout: тот тянет пилюлю через scale и сплющил бы
+                скругление и blur свечения. overflow-hidden режет только текст, свечение снаружи. */}
+            <MotionSpan
+              animate={{ width }}
+              className="grid overflow-hidden"
+              transition={reducedMotion ? { duration: 0 } : transition}
+            >
+              {/* justify-self-center: текст своей ширины по центру, пока контейнер её догоняет;
+                  растянутый по grid он мерил бы ширину контейнера, а не свою. */}
+              <span
+                className="justify-self-center whitespace-nowrap"
+                ref={measure}
+              >
+                {labels[index]}
+              </span>
+            </MotionSpan>
+          </LazyMotion>
+        </SectionLabel>
       </div>
     </div>
   );
