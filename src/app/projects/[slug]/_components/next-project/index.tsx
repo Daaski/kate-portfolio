@@ -83,11 +83,13 @@ export function NextProject({ href, children }: NextProjectProps) {
       >
         Следующий проект
         {/* Заливка по Figma — тёмная копия кнопки, слева открыта на --fill. clip-path, а не ширина:
-            значение меняется каждый кадр, обрезка не пересчитывает раскладку. Имя ссылки — у текста
-            выше, копию скринридеру не читать. */}
+            значение меняется каждый кадр, обрезка не пересчитывает раскладку. Левый край скругляет
+            rounded-full самой копии, clip-path — только передний правый: radius в clip-path ужимается
+            по ширине обрезки, и в начале заливка шла бы прямоугольной полосой поверх закругления.
+            Имя ссылки — у текста выше, копию скринридеру не читать. */}
         <span
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center bg-bg-inverse text-fg-inverse [clip-path:inset(0_calc(100%-var(--fill))_0_0_round_9999px)]"
+          className="absolute inset-0 flex items-center justify-center rounded-full bg-bg-inverse text-fg-inverse [clip-path:inset(0_calc(100%-var(--fill))_0_0_round_0_9999px_9999px_0)]"
         >
           Следующий проект
         </span>
