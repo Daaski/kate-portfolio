@@ -12,7 +12,7 @@ export const iconButtonVariants = cva(
       variant: {
         primary: "size-13 bg-bg-inverse text-fg-inverse *:size-8",
         secondary:
-          "size-12 bg-bg-surface text-fg-tertiary *:size-6.5 hover:text-fg-primary",
+          "size-12 bg-bg-surface text-fg-tertiary *:size-6.5 hover:bg-bg-muted hover:text-fg-primary motion-safe:transition-colors motion-safe:duration-300",
       },
     },
   }
