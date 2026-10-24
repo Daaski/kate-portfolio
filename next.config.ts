@@ -8,6 +8,8 @@ export default function nextConfig(phase: string): NextConfig {
     // на эти файлы. Варианты есть только после сборки, поэтому dev отдаёт
     // оригиналы как есть.
     adapterPath: require.resolve("./scripts/optimize-images.ts"),
+    // Сайт на GitHub Pages живёт в подпапке daaski.github.io/kate-portfolio.
+    basePath: "/kate-portfolio",
     images: {
       loader: "custom",
       loaderFile: "./src/lib/image-loader.ts",
