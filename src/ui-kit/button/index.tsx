@@ -11,7 +11,8 @@ export const buttonVariants = cva(
           "bg-bg-overlay px-3 font-medium text-fg-inverse text-xs backdrop-blur-xs",
         secondary:
           "bg-bg-surface px-3 font-semibold text-fg-tertiary text-sm hover:text-fg-primary",
-        tertiary: "font-medium text-fg-primary text-sm hover:underline",
+        tertiary:
+          "relative font-medium text-fg-primary text-sm after:absolute after:inset-x-0 after:bottom-2.5 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100",
       },
     },
   }
