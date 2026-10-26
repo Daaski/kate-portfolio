@@ -6,6 +6,7 @@ import iconSvg from "@/assets/icons/icon.svg";
 import icon96 from "@/assets/icons/icon-96.png";
 import { site } from "@/constants/site";
 import "@/styles/globals.css";
+import { ClickSound } from "@/widgets/click-sound";
 import { Cursor } from "@/widgets/cursor";
 
 const inter = Inter({
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </div>
         <Cursor />
+        <ClickSound />
       </body>
     </html>
   );

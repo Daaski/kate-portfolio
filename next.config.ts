@@ -22,6 +22,8 @@ export default function nextConfig(phase: string): NextConfig {
           as: "*.css",
           loaders: ["@tailwindcss/turbopack"],
         },
+        // Импорт звука отдаёт URL с basePath, как у картинок; из public/ префикса бы не было.
+        "*.mp3": { type: "asset" },
       },
     },
   };
