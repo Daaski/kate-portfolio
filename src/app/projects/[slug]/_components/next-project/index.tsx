@@ -11,9 +11,13 @@ import {
   useEffect,
   useRef,
   useState,
+  ViewTransition,
 } from "react";
+import { routes } from "@/constants/routes";
 import { onScrollFrame } from "@/lib/on-scroll-frame";
+import { onSiteNavigation } from "@/lib/on-site-navigation";
 import { progress } from "@/lib/progress";
+import { nextProjectTypes, projectMorph } from "@/lib/view-transition";
 import { buttonVariants } from "@/ui-kit/button";
 
 // Допуск на дробные пиксели: низ зоны может не доехать до низа экрана на долю пикселя.
@@ -23,10 +27,11 @@ const FINISH = 0.8;
 
 interface NextProjectProps {
   children: ReactNode;
-  href: string;
+  slug: string;
 }
 
-export function NextProject({ href, children }: NextProjectProps) {
+export function NextProject({ slug, children }: NextProjectProps) {
+  const href = routes.project(slug);
   const router = useRouter();
   const reducedMotion = useReducedMotion();
   const zone = useRef<HTMLDivElement>(null);
@@ -46,6 +51,33 @@ export function NextProject({ href, children }: NextProjectProps) {
   // после инерции). Следующий жест едет по зоне. После «Назад» зоны ещё нет: восстановленная прокрутка
   // упирается в кнопку и до конца зоны не достаёт.
   const [open, setOpen] = useState(false);
+  // Превью получает имя морфа прямо перед навигацией: раньше, во время доезда, оно совпало бы
+  // с мини-карточкой этого же проекта в «Других проектах», если кликнуть по ней. Обновление
+  // коммитится раньше навигации (та идёт в transition) и попадает в снимок старой страницы.
+  const [departing, setDeparting] = useState(false);
+  // Навигация уже ушла — своя или по другой ссылке сайта: второй push и второе имя морфа не нужны.
+  const departed = useRef<boolean>(false);
+  const depart = useCallback(() => {
+    if (departed.current) {
+      return;
+    }
+    departed.current = true;
+    setDeparting(true);
+    router.push(href, { transitionTypes: nextProjectTypes });
+  }, [router, href]);
+
+  // Клик по другой ссылке во время заливки — например, по мини-карточке этого же проекта: конец
+  // заливки не уводит второй раз, и превью не забирает имя морфа, которое уже у карточки.
+  useEffect(
+    () =>
+      onSiteNavigation((target) => {
+        if (target !== link.current) {
+          leaving.current = true;
+          departed.current = true;
+        }
+      }),
+    []
+  );
 
   useEffect(() => {
     if (open) {
@@ -91,11 +123,11 @@ export function NextProject({ href, children }: NextProjectProps) {
       preview.current?.style.setProperty("translate", `0 ${(1 - p) * 100}%`);
       if (p >= DONE) {
         leaving.current = true;
-        router.push(href);
+        depart();
       }
     };
     return onScrollFrame(update);
-  }, [open, href, router]);
+  }, [open, depart]);
 
   const finish = useCallback(
     (event: MouseEvent<HTMLAnchorElement>) => {
@@ -115,15 +147,13 @@ export function NextProject({ href, children }: NextProjectProps) {
       }
       leaving.current = true;
       if (reducedMotion) {
-        router.push(href);
+        depart();
         return;
       }
       setFrom(current.current);
     },
-    [reducedMotion, router, href]
+    [reducedMotion, depart]
   );
-
-  const goNext = useCallback(() => router.push(href), [router, href]);
 
   // Первый кадр задан явно — доезд стартует с того, что нарисовала прокрутка, а не с прочитанного из DOM.
   const transition = {
@@ -170,7 +200,7 @@ export function NextProject({ href, children }: NextProjectProps) {
             }
             aria-hidden="true"
             className="absolute inset-0 flex items-center justify-center rounded-full bg-bg-inverse text-fg-inverse [--fill:0%] [clip-path:inset(0_calc(100%-var(--fill))_0_0_round_0_9999px_9999px_0)]"
-            onAnimationComplete={goNext}
+            onAnimationComplete={depart}
             ref={fill}
             transition={transition}
           >
@@ -179,24 +209,29 @@ export function NextProject({ href, children }: NextProjectProps) {
         </Link>
         {/* Превью — тизер, переход даёт ссылка: скринридеру его не читать. */}
         {open ? (
-          <div
-            aria-hidden="true"
-            className="sticky bottom-0 h-60 w-full overflow-hidden"
-            ref={frame}
+          <ViewTransition
+            default="none"
+            {...(departing ? projectMorph(slug) : undefined)}
           >
-            <MotionDiv
-              animate={
-                from === null
-                  ? undefined
-                  : { translate: [`0 ${(1 - from) * 100}%`, "0 0%"] }
-              }
-              className="translate-y-full"
-              ref={preview}
-              transition={transition}
+            <div
+              aria-hidden="true"
+              className="sticky bottom-0 h-60 w-full overflow-hidden"
+              ref={frame}
             >
-              {children}
-            </MotionDiv>
-          </div>
+              <MotionDiv
+                animate={
+                  from === null
+                    ? undefined
+                    : { translate: [`0 ${(1 - from) * 100}%`, "0 0%"] }
+                }
+                className="translate-y-full"
+                ref={preview}
+                transition={transition}
+              >
+                {children}
+              </MotionDiv>
+            </div>
+          </ViewTransition>
         ) : null}
       </div>
     </LazyMotion>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ViewTransition } from "react";
 import { CaseHeader } from "@/app/projects/[slug]/_components/case-header";
 import {
   CaseSlides,
@@ -12,6 +13,7 @@ import { ScrollProgress } from "@/app/projects/[slug]/_components/scroll-progres
 import { openGraph } from "@/app/shared-metadata";
 import { nextProject, projects } from "@/constants/cases/projects";
 import { routes } from "@/constants/routes";
+import { pageTransition } from "@/lib/view-transition";
 import { SidebarLayout } from "@/widgets/sidebar-layout";
 
 // Static export: страницы только для известных проектов, остальные адреса — 404.
@@ -51,13 +53,13 @@ export default async function ProjectPage({
   const next = nextProject(slug);
 
   return (
-    <>
+    <ViewTransition {...pageTransition}>
       <ScrollProgress />
       <SidebarLayout
         action={<CloseLink />}
         bottom={<OtherProjects currentSlug={slug} />}
         end={
-          <NextProject href={routes.project(next.slug)}>
+          <NextProject slug={next.slug}>
             <SlideView slide={next.groups[0].slides[0]} />
           </NextProject>
         }
@@ -65,9 +67,13 @@ export default async function ProjectPage({
       >
         {/* pt-20 — слайды начинаются на одной линии с шапкой (Figma: carousel/sections y=80). */}
         <div className="lg:pt-20">
-          <CaseSlides accent={project.accent} groups={project.groups} />
+          <CaseSlides
+            accent={project.accent}
+            groups={project.groups}
+            slug={slug}
+          />
         </div>
       </SidebarLayout>
-    </>
+    </ViewTransition>
   );
 }

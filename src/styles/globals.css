@@ -12,3 +12,73 @@
     cursor: pointer;
   }
 }
+
+/* Переходы между страницами — React <ViewTransition> (docs/architecture.md, «Переходы между страницами»).
+   Псевдоэлементы ::view-transition-* классами Tailwind не задать. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+::view-transition {
+  /* Клик во время перехода доходит до новой страницы, а не тонет в оверлее. */
+  pointer-events: none;
+}
+
+/* Уход — с ускорением, появление — с замедлением (ease-in / ease-out Tailwind). Новая страница ждёт,
+   пока погаснет старая: вдвоём они спорили бы за внимание. */
+::view-transition-old(.page-exit) {
+  animation: 150ms var(--ease-in) both page-out;
+}
+
+::view-transition-new(.page-enter) {
+  animation: 300ms var(--ease-out) 150ms both page-in;
+}
+
+/* Кривая — как в src/lib/motion.ts. z-index морфу не задаётся: новая страница рисуется поверх, и лейбл
+   группы и полоса прогресса проявляются над летящей картинкой — как в итоговой раскладке. */
+::view-transition-group(.project-morph) {
+  animation-duration: 500ms;
+  animation-timing-function: var(--ease-in-out);
+}
+
+/* Обложка и первый слайд — разные картинки с разными пропорциями: снимки прижаты к верху
+   и обрезаются, а не растягиваются. У снимков overflow: visible, и без clip cover вылезает за рамку. */
+::view-transition-old(.project-morph),
+::view-transition-new(.project-morph) {
+  height: 100%;
+  overflow: clip;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Рамка превью «Следующего проекта» — верх того же слайда: старый снимок сохраняет пропорции,
+   и группа, вырастая, открывает слайд вниз, а не раздувает рамку. */
+html:active-view-transition-type(next-project)::view-transition-old(
+  .project-morph
+) {
+  height: auto;
+}
+
+/* Курсор на время перехода прячется: в Chrome группа с difference поверх снимков точку не показывала. */
+::view-transition-group(cursor) {
+  display: none;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    filter: blur(3px);
+    opacity: 0;
+    translate: 0 10px;
+  }
+}

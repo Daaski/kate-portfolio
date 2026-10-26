@@ -1,7 +1,16 @@
-import { render, screen, within } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
 import { projects } from "@/constants/cases/projects";
+import { firstSlideImage } from "@/lib/case-slide";
+import { preloadImage } from "@/lib/preload-image";
+import { morphName } from "@/lib/test-utils";
 import { OtherProjects } from ".";
+
+vi.mock("next/link", async () => ({
+  default: (await import("@/lib/test-utils")).LinkStub,
+}));
+
+vi.mock("@/lib/preload-image", () => ({ preloadImage: vi.fn() }));
 
 test("is a region named by its heading", () => {
   render(<OtherProjects currentSlug="sfera" />);
@@ -26,4 +35,21 @@ test("links to every project except the current one", () => {
   expect(
     within(list).queryByRole("link", { name: "Центр охраны труда" })
   ).toBeNull();
+});
+
+test("opens a case with the morph, transition types and preloaded first slide", () => {
+  render(<OtherProjects currentSlug="sfera" />);
+  const project = projects.find((item) => item.slug !== "sfera");
+  if (!project) {
+    throw new Error("нужен хотя бы один другой проект");
+  }
+  const link = screen.getByRole("link", { name: project.title });
+  const cover = within(link).getByRole("img");
+  expect(link.getAttribute("data-transition-types")).toBe("nav");
+  expect(morphName(cover)).toBeNull();
+
+  fireEvent.click(link);
+
+  expect(morphName(cover)).toBe(`project-${project.slug}`);
+  expect(preloadImage).toHaveBeenCalledWith(firstSlideImage(project));
 });

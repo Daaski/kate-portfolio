@@ -1,14 +1,11 @@
 import Image from "next/image";
-import { useId } from "react";
+import { useId, ViewTransition } from "react";
 import { GroupLabel } from "@/app/projects/[slug]/_components/group-label";
 import type { Slide, SlideGroup } from "@/constants/cases/types";
+import { CASE_SLIDE_SIZES } from "@/lib/case-slide";
+import { projectMorph } from "@/lib/view-transition";
 import { ContentCard } from "@/ui-kit/content-card";
 import type { SectionLabelAccent } from "@/ui-kit/section-label";
-
-// Ширина колонки контента: 628px при max-w-7xl, ~41vw на 1024 (в sizes 44vw — с запасом), на мобилке — экран без полей px-4.
-// Брейкпоинты в rem, как lg в Tailwind: при крупном шрифте браузера sizes переключается вместе с вёрсткой.
-const SLIDE_SIZES =
-  "(min-width: 90rem) 628px, (min-width: 64rem) 44vw, calc(100vw - 2rem)";
 
 interface SlideViewProps {
   eager?: boolean;
@@ -27,7 +24,7 @@ export function SlideView({ slide, eager = false }: SlideViewProps) {
         className="h-auto w-full rounded-2xl"
         fetchPriority={eager ? "high" : undefined}
         loading={eager ? "eager" : "lazy"}
-        sizes={SLIDE_SIZES}
+        sizes={CASE_SLIDE_SIZES}
         src={slide.image.src}
       />
     );
@@ -47,9 +44,10 @@ function slideKey(slide: Slide) {
 interface CaseSlidesProps {
   accent: SectionLabelAccent;
   groups: SlideGroup[];
+  slug: string;
 }
 
-export function CaseSlides({ accent, groups }: CaseSlidesProps) {
+export function CaseSlides({ accent, groups, slug }: CaseSlidesProps) {
   const id = useId();
 
   return (
@@ -69,13 +67,18 @@ export function CaseSlides({ accent, groups }: CaseSlidesProps) {
             <h2 className="sr-only" id={headingId}>
               {group.label}
             </h2>
-            {group.slides.map((slide, slideIndex) => (
-              <SlideView
-                eager={groupIndex === 0 && slideIndex === 0}
-                key={slideKey(slide)}
-                slide={slide}
-              />
-            ))}
+            {group.slides.map((slide, slideIndex) => {
+              const first = groupIndex === 0 && slideIndex === 0;
+              const key = slideKey(slide);
+              // Первый слайд — цель морфа: картинка проекта, по которой кликнули, перетекает в него.
+              return first ? (
+                <ViewTransition key={key} {...projectMorph(slug)}>
+                  <SlideView eager slide={slide} />
+                </ViewTransition>
+              ) : (
+                <SlideView key={key} slide={slide} />
+              );
+            })}
           </section>
         );
       })}
