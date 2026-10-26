@@ -13,3 +13,12 @@ test.each([
     within(item).getByRole("link", { name: text }).getAttribute("href")
   ).toBe(href);
 });
+
+test("copyOnDesktop contact gets a copy button, others do not", () => {
+  render(<Contacts />);
+  const [email, telegram] = screen.getAllByRole("listitem");
+  expect(
+    within(email).getByRole("button", { name: "knnemova@yandex.ru" })
+  ).toBeDefined();
+  expect(within(telegram).queryByRole("button")).toBeNull();
+});
