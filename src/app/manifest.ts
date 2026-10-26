@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import manifest192 from "@/assets/icons/manifest-192.png";
 import manifest512 from "@/assets/icons/manifest-512.png";
+import { site } from "@/constants/site";
 
 // output: "export" без этого не соберёт metadata route
 export const dynamic = "force-static";
@@ -8,6 +9,7 @@ export const dynamic = "force-static";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     background_color: "#ffffff",
+    description: site.description,
     display: "standalone",
     // Без иконок с purpose "any" (значение по умолчанию) Chrome не даёт установить
     // сайт; maskable с полями безопасной зоны — для адаптивных иконок Android
@@ -27,7 +29,7 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/png",
       },
     ],
-    name: "Kate Nemova - UX/UI Designer",
+    name: site.title,
     // Относительно адреса манифеста: даёт корень сайта с basePath. Без них браузер
     // берёт страницу, с которой поставили сайт, — например, страницу кейса
     scope: "./",

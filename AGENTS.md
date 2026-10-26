@@ -8,9 +8,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# kate-portfolio
+# knnemova
 
-Сайт-портфолио. Полностью статический: `output: "export"`, `bun run build` кладёт готовый HTML/CSS/JS в `out/`. Хостится на GitHub Pages — https://daaski.github.io/kate-portfolio/, каждый push в `main` деплоит `.github/workflows/deploy.yml` (lint, тесты, сборка). Без бэкенда и БД.
+Сайт-портфолио. Полностью статический: `output: "export"`, `bun run build` кладёт готовый HTML/CSS/JS в `out/`. Хостится на GitHub Pages — https://daaski.github.io/knnemova/, каждый push в `main` деплоит `.github/workflows/deploy.yml` (lint, тесты, сборка). Без бэкенда и БД.
 
 ## Как работать
 
@@ -43,7 +43,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ```bash
 bun install        # зависимости
 bun add <pkg>      # новая зависимость (-d для dev)
-bun run dev        # dev-сервер, http://localhost:3000/kate-portfolio
+bun run dev        # dev-сервер, http://localhost:3000/knnemova
 bun run test       # юнит-тесты (vitest run)
 bun run lint       # ultracite check: линт + проверка форматирования
 bun run format     # ultracite fix: автоисправление и форматирование
@@ -68,7 +68,7 @@ bun run build      # статическая сборка в out/ + провер�
 
 Нельзя (сборка упадёт): Server Actions, Route Handlers с `Request`, `cookies()`/`headers()`, `redirects`/`rewrites`/`headers` в конфиге, `proxy`, ISR, динамические роуты без `generateStaticParams()`. Нужен сервер — сначала обсудить.
 
-Сайт живёт в подпапке (`basePath: "/kate-portfolio"` в `next.config.ts`), префикс ставит сам Next: внутренние ссылки — только `next/link` с адресами из `routes`, картинки — только импортом из `src/assets`. Сырой `<a href="/...">` или строковый путь к файлу из `public/` префикса не получат и на сайте дадут 404.
+Сайт живёт в подпапке (`basePath: "/knnemova"` в `next.config.ts`), префикс ставит сам Next: внутренние ссылки — только `next/link` с адресами из `routes`, картинки — только импортом из `src/assets`. Сырой `<a href="/...">` или строковый путь к файлу из `public/` префикса не получат и на сайте дадут 404.
 
 ## Next.js
 
