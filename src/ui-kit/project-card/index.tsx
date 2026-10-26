@@ -39,23 +39,23 @@ export function ProjectCard({
       href={href}
     >
       {/* isolate + -z-10: обложка лежит под тегом и текстом, градиент (before:) — между ними. */}
-      <Card className="isolate aspect-4/5">
-        <div className="absolute inset-x-7.5 inset-y-20 -z-10 flex items-center justify-center">
+      <Card className="isolate h-100 sm:aspect-4/5 sm:h-auto">
+        <div className="absolute inset-x-7.25 inset-y-19.5 -z-10 flex items-center justify-center lg:inset-x-7.5 lg:inset-y-20">
           {/* Chrome пишет в Issues «Lazy-loaded images should have explicit dimensions»: h-auto w-auto
               перебивают width/height. Сдвига вёрстки нет — блок абсолютный. */}
           <Image
             alt={cover.alt}
-            className="h-auto max-h-full w-auto max-w-full rounded-3xl border-2 border-border-inverse shadow-xl"
+            className="h-auto max-h-full w-auto max-w-full rounded-2xl border-2 border-border-inverse shadow-xl lg:rounded-3xl"
             loading={eager ? "eager" : "lazy"}
             sizes={sizes}
             src={cover.src}
           />
         </div>
-        <p className="p-6 font-medium text-fg-tertiary text-xs">{tag}</p>
+        <p className="p-4 font-medium text-fg-tertiary text-xs lg:p-6">{tag}</p>
         {/* Градиент — слой before: с opacity: background-image не анимируется, переключался бы скачком. */}
-        <div className="relative p-6 before:absolute before:inset-0 before:-z-10 before:bg-linear-to-t before:from-50% before:from-gradient-grey before:to-transparent motion-safe:before:transition-opacity motion-safe:before:duration-300 lg:before:opacity-0 lg:group-focus-visible:before:opacity-100 lg:group-hover:before:opacity-100">
+        <div className="relative p-4 before:absolute before:inset-0 before:-z-10 before:bg-linear-to-t before:from-50% before:from-gradient-grey before:to-transparent motion-safe:before:transition-opacity motion-safe:before:duration-300 lg:p-6 lg:before:opacity-0 lg:group-focus-visible:before:opacity-100 lg:group-hover:before:opacity-100">
           <p
-            className="font-medium text-fg-primary text-xl tracking-snug"
+            className="font-medium text-fg-primary text-lg tracking-snug max-lg:leading-7 lg:text-xl"
             id={titleId}
           >
             {title}

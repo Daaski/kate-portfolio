@@ -4,10 +4,10 @@ import { buttonVariants } from "@/ui-kit/button";
 
 export function Contacts() {
   return (
-    <ul className="flex gap-6">
+    <ul className="flex flex-col gap-4 max-lg:px-2 lg:flex-row lg:gap-6">
       {contacts.map((contact) => (
         <li
-          className="flex flex-1 flex-col items-start gap-2"
+          className="flex flex-col items-start gap-2 lg:flex-1"
           key={contact.href}
         >
           <span className="text-fg-tertiary text-sm">{contact.label}</span>

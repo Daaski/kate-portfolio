@@ -2,6 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { CopyButton } from ".";
 
+// sonner дописывает к aria-label региона хоткей (alt+T)
+const REGION_NAME = /^Уведомления/;
+
 function mockClipboard(writeText: () => Promise<void>) {
   const spy = vi.fn(writeText);
   vi.stubGlobal("navigator", { clipboard: { writeText: spy } });
@@ -18,6 +21,12 @@ test("copies the address and shows a toast", async () => {
   fireEvent.click(screen.getByRole("button", { name: "a@b.ru" }));
   expect(writeText).toHaveBeenCalledWith("a@b.ru");
   expect(await screen.findByText("Скопировано!")).toBeDefined();
+});
+
+test("mounts the toast region outside the button's parent", async () => {
+  const { container } = render(<CopyButton text="a@b.ru" />);
+  const region = await screen.findByRole("region", { name: REGION_NAME });
+  expect(container.contains(region)).toBe(false);
 });
 
 test("shows an error toast when the clipboard rejects", async () => {

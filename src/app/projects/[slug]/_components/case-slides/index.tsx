@@ -33,7 +33,7 @@ export function SlideView({ slide, eager = false }: SlideViewProps) {
     );
   }
   return (
-    <ContentCard className="min-h-120" tag={slide.tag}>
+    <ContentCard className="lg:min-h-120" tag={slide.tag}>
       {slide.body}
     </ContentCard>
   );
