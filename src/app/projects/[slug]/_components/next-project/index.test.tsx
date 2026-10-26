@@ -1,10 +1,56 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { NextProject } from ".";
 
 // useRouter без смонтированного App Router падает — в jsdom его нет.
 const router = vi.hoisted(() => ({ push: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => router }));
+
+// jsdom не рисует кадры: элементы motion запоминают цель доезда, конец анимации тест вызывает сам.
+const motion = vi.hoisted(() => ({
+  complete: undefined as (() => void) | undefined,
+  fill: undefined as unknown,
+  preview: undefined as unknown,
+  reduced: false,
+}));
+
+interface MotionProps {
+  animate?: unknown;
+  onAnimationComplete?: () => void;
+  transition?: unknown;
+}
+
+vi.mock("motion/react-m", () => ({
+  div: ({
+    animate,
+    onAnimationComplete: _complete,
+    transition: _transition,
+    ...props
+  }: ComponentProps<"div"> & MotionProps) => {
+    if (animate) {
+      motion.preview = animate;
+    }
+    return <div {...props} />;
+  },
+  span: ({
+    animate,
+    onAnimationComplete,
+    transition: _transition,
+    ...props
+  }: ComponentProps<"span"> & MotionProps) => {
+    if (animate) {
+      motion.fill = animate;
+      motion.complete = onAnimationComplete;
+    }
+    return <span {...props} />;
+  },
+}));
+
+vi.mock("motion/react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("motion/react")>()),
+  useReducedMotion: () => motion.reduced,
+}));
 
 const PREVIEW = "Превью следующего кейса";
 
@@ -36,10 +82,9 @@ function layout(viewport: number, zone: number, block: number) {
     () => ({ bottom: buttonBottom, height: zone, top }) as DOMRect
   );
   top = viewport;
-  return {
-    end: viewport - zone,
-    line: viewport - Math.min(block, zone / 2),
-  };
+  const line = viewport - Math.min(block, zone / 2);
+  const end = viewport - zone;
+  return { end, line, middle: (line + end) / 2 };
 }
 
 function renderNextProject() {
@@ -48,6 +93,22 @@ function renderNextProject() {
       <p>{PREVIEW}</p>
     </NextProject>
   );
+}
+
+// Неперехваченный клик по ссылке ушёл бы в навигацию jsdom: слушатель на document запоминает,
+// перехватил ли клик компонент, и гасит его сам.
+function click(init?: MouseEventInit) {
+  let prevented = false;
+  document.addEventListener(
+    "click",
+    (event) => {
+      prevented = event.defaultPrevented;
+      event.preventDefault();
+    },
+    { once: true }
+  );
+  fireEvent.click(screen.getByRole("link", { name: "Следующий проект" }), init);
+  return prevented;
 }
 
 beforeEach(() => {
@@ -61,6 +122,10 @@ beforeEach(() => {
 
 afterEach(() => {
   router.push.mockClear();
+  motion.complete = undefined;
+  motion.fill = undefined;
+  motion.preview = undefined;
+  motion.reduced = false;
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
@@ -121,5 +186,70 @@ test("navigates in a viewport lower than the block", () => {
   stopAt(280);
   scroll(line);
   scroll(end);
+  expect(router.push).toHaveBeenCalledWith("/projects/sfera");
+});
+
+test("finishes the progress before navigating on click", () => {
+  const { line, middle } = layout(768, 1536, 476);
+  renderNextProject();
+  stopAt(700);
+  scroll(line);
+  scroll(middle);
+  expect(click()).toBe(true);
+  expect(router.push).not.toHaveBeenCalled();
+  expect(motion.fill).toEqual({ "--fill": ["50%", "100%"] });
+  expect(motion.preview).toEqual({ translate: ["0 50%", "0 0%"] });
+  act(() => motion.complete?.());
+  expect(router.push).toHaveBeenCalledTimes(1);
+  expect(router.push).toHaveBeenCalledWith("/projects/sfera");
+});
+
+test("fills from zero when clicked before the zone opens", () => {
+  renderNextProject();
+  click();
+  expect(motion.fill).toEqual({ "--fill": ["0%", "100%"] });
+});
+
+// Клик до открытия зоны уже доезжает с нуля — превью со своей длительностью отстало бы от заливки.
+test("keeps the zone closed when scrolling stops after a click", () => {
+  layout(768, 1536, 476);
+  renderNextProject();
+  click();
+  stopAt(700);
+  expect(screen.queryByText(PREVIEW)).toBeNull();
+});
+
+test("navigates once on repeated clicks and scrolling during the finish", () => {
+  const { line, middle, end } = layout(768, 1536, 476);
+  renderNextProject();
+  stopAt(700);
+  scroll(line);
+  scroll(middle);
+  click();
+  click();
+  scroll(end);
+  act(() => motion.complete?.());
+  expect(router.push).toHaveBeenCalledTimes(1);
+});
+
+// Клик с модификатором — новая вкладка или окно браузера, текущая страница остаётся как есть.
+test.each<MouseEventInit>([
+  { metaKey: true },
+  { ctrlKey: true },
+  { shiftKey: true },
+  { altKey: true },
+  { button: 1 },
+])("leaves the %o click to the browser", (init) => {
+  renderNextProject();
+  expect(click(init)).toBe(false);
+  expect(motion.fill).toBeUndefined();
+  expect(router.push).not.toHaveBeenCalled();
+});
+
+test("navigates at once with reduced motion", () => {
+  motion.reduced = true;
+  renderNextProject();
+  expect(click()).toBe(true);
+  expect(motion.fill).toBeUndefined();
   expect(router.push).toHaveBeenCalledWith("/projects/sfera");
 });

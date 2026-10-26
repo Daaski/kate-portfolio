@@ -10,3 +10,6 @@ next-env.d.ts
 
 # agent specs and plans (local only)
 /docs/superpowers/
+
+# firecrawl CLI cache (local only)
+/.firecrawl/
