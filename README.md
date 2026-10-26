@@ -1,4 +1,4 @@
-# kate-portfolio
+# knnemova
 
 Сайт-портфолио на Next.js + Tailwind CSS. Собирается в статику.
 

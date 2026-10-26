@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "kate-portfolio",
+      "name": "knnemova",
       "dependencies": {
         "@phosphor-icons/react": "^2.1.10",
         "class-variance-authority": "^0.7.1",

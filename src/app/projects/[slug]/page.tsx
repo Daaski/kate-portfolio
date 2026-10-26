@@ -9,6 +9,7 @@ import { CloseLink } from "@/app/projects/[slug]/_components/close-link";
 import { NextProject } from "@/app/projects/[slug]/_components/next-project";
 import { OtherProjects } from "@/app/projects/[slug]/_components/other-projects";
 import { ScrollProgress } from "@/app/projects/[slug]/_components/scroll-progress";
+import { openGraph } from "@/app/shared-metadata";
 import { nextProject, projects } from "@/constants/cases/projects";
 import { routes } from "@/constants/routes";
 import { SidebarLayout } from "@/widgets/sidebar-layout";
@@ -32,8 +33,14 @@ function findProject(slug: string) {
 export async function generateMetadata({
   params,
 }: PageProps<"/projects/[slug]">): Promise<Metadata> {
-  const { title, description } = findProject((await params).slug);
-  return { description, title };
+  const { slug, title, description } = findProject((await params).slug);
+  const url = routes.project(slug);
+  return {
+    alternates: { canonical: url },
+    description,
+    openGraph: { ...openGraph, description, title, url },
+    title,
+  };
 }
 
 export default async function ProjectPage({

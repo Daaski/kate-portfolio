@@ -4,6 +4,7 @@ import appleIcon from "@/assets/icons/apple-icon.png";
 import favicon from "@/assets/icons/favicon.ico";
 import iconSvg from "@/assets/icons/icon.svg";
 import icon96 from "@/assets/icons/icon-96.png";
+import { site } from "@/constants/site";
 import "@/styles/globals.css";
 import { Cursor } from "@/widgets/cursor";
 
@@ -13,7 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  description: "Портфолио Кати",
+  description: site.description,
   // Иконки лежат в src/assets/icons, а не файлами-конвенциями в корне app,
   // чтобы app не засорялся
   icons: {
@@ -24,7 +25,18 @@ export const metadata: Metadata = {
       { sizes: "96x96", type: "image/png", url: icon96.src },
     ],
   },
-  title: { default: "Катя — портфолио", template: "%s — Катя" },
+  // Google keywords не читает, Яндекс учитывает при подборе страниц под запрос
+  keywords: [
+    "Kate Nemova",
+    "Екатерина Немова",
+    "Катя Немова",
+    "UX/UI дизайнер",
+    "UX/UI designer",
+    "портфолио дизайнера",
+    "веб-дизайн",
+  ],
+  metadataBase: new URL(site.url),
+  title: { default: site.title, template: `%s — ${site.name}` },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
