@@ -46,6 +46,10 @@
   --color-accent-blue: var(--color-blue-350);
   --color-gradient-grey: var(--color-neutral-100);
 
+  /* Тост: в Figma пока нет, значения подобраны по скриншоту дизайнера. */
+  --color-bg-toast: hsla(21, 56%, 87%, 1);
+  --color-fg-toast: hsla(149, 42%, 20%, 1);
+
   /*
    * Центры свечения SectionLabel — стили gradient/blue|pink|green в Figma:
    * радиальный градиент от этого цвета (50%) к accent-* того же проекта (100%).
