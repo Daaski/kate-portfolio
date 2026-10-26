@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
 import { CursorLabel } from ".";
 
@@ -11,32 +11,14 @@ function renderLink() {
   return screen.getByRole("link", { name: "Центр охраны труда" });
 }
 
-test("shows no label until the mouse enters", () => {
-  renderLink();
-  expect(screen.queryByText("Подробнее")).toBeNull();
-});
-
-test("shows the label hidden from screen readers when the mouse enters", () => {
+test("marks the children with the label for the cursor", () => {
   const link = renderLink();
-  fireEvent.pointerEnter(link, { pointerType: "mouse" });
-  expect(screen.getByText("Подробнее").getAttribute("aria-hidden")).toBe(
-    "true"
-  );
   expect(
-    screen.getByRole("link", { name: "Центр охраны труда" })
-  ).toBeDefined();
+    link.closest("[data-cursor-label]")?.getAttribute("data-cursor-label")
+  ).toBe("Подробнее");
 });
 
-test("shows no label on touch", () => {
-  const link = renderLink();
-  fireEvent.pointerEnter(link, { pointerType: "touch" });
-  fireEvent.pointerMove(link, { pointerType: "touch" });
-  expect(screen.queryByText("Подробнее")).toBeNull();
-});
-
-test("hides the label when the mouse leaves", () => {
-  const link = renderLink();
-  fireEvent.pointerEnter(link, { pointerType: "mouse" });
-  fireEvent.pointerLeave(link, { pointerType: "mouse" });
+test("draws no label itself", () => {
+  renderLink();
   expect(screen.queryByText("Подробнее")).toBeNull();
 });

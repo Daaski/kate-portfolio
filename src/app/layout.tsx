@@ -5,6 +5,7 @@ import favicon from "@/assets/icons/favicon.ico";
 import iconSvg from "@/assets/icons/icon.svg";
 import icon96 from "@/assets/icons/icon-96.png";
 import "@/styles/globals.css";
+import { Cursor } from "@/widgets/cursor";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="mx-auto box-content max-w-7xl px-4 lg:px-20">
           {children}
         </div>
+        <Cursor />
       </body>
     </html>
   );

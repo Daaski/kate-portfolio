@@ -3,12 +3,10 @@
 import { domAnimation, LazyMotion, useReducedMotion } from "motion/react";
 import { span as MotionSpan } from "motion/react-m";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { transition } from "@/lib/motion";
 import { onScrollFrame } from "@/lib/on-scroll-frame";
 import { SectionLabel, type SectionLabelAccent } from "@/ui-kit/section-label";
 import { currentGroupIndex } from "./utils";
-
-// 300 мс и кривая — как у duration-300 Tailwind в остальных переходах сайта.
-const transition = { duration: 0.3, ease: [0.4, 0, 0.2, 1] } as const;
 
 interface GroupLabelProps {
   accent: SectionLabelAccent;
