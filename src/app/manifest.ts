@@ -10,9 +10,11 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     background_color: "#ffffff",
     description: site.description,
-    display: "standalone",
-    // Без иконок с purpose "any" (значение по умолчанию) Chrome не даёт установить
-    // сайт; maskable с полями безопасной зоны — для адаптивных иконок Android
+    // С standalone/fullscreen/minimal-ui Chromium-браузеры предлагают
+    // «Установить приложение» — портфолио ставить незачем
+    display: "browser",
+    // Иконки — для ярлыка «Добавить на главный экран»; maskable с полями
+    // безопасной зоны — для адаптивных иконок Android
     icons: [
       { sizes: "192x192", src: manifest192.src, type: "image/png" },
       { sizes: "512x512", src: manifest512.src, type: "image/png" },
