@@ -15,8 +15,9 @@ import {
 import { DESKTOP, nearestSlide } from "./utils";
 
 // Ширины слайда зашиты в SLIDE_SIZES (utils.ts) — меняются вместе.
+// Ниже sm слайд — лента минус --spacing-carousel-peek (theme.css).
 const SLIDE_CLASS =
-  "min-w-0 shrink-0 basis-5/6 px-2 sm:basis-1/2 lg:min-h-0 lg:basis-auto lg:px-0 lg:py-2";
+  "min-w-0 shrink-0 basis-[calc(100%-var(--spacing-carousel-peek))] px-1 sm:basis-1/2 sm:px-2 lg:min-h-0 lg:basis-auto lg:px-0 lg:py-2";
 
 // Копия скрыта от скринридера и Tab, но кликабельна мышью и пальцем: inert заблокировал бы и клик.
 function removeFromTabOrder(node: HTMLElement | null) {
@@ -105,7 +106,7 @@ export function ProjectsCarousel({
         {/* touch-action по оси: жест вдоль ленты — Embla, поперёк — браузеру.
             max-lg: — классы touch-pan-* в Tailwind складываются, а не заменяют друг друга. */}
         <div className="flex touch-pinch-zoom max-lg:touch-pan-y lg:h-full lg:touch-pan-x lg:flex-col">
-          {/* Промежуток 16 — паддингом слайдов (так Embla советует для loop), симметричным,
+          {/* Промежуток (8 ниже sm, 16 с sm) — паддингом слайдов (так Embla советует для loop), симметричным,
               чтобы карточка центрировалась точно. */}
           {/* Копии нужны для loop: Embla включает его, только если остальные слайды перекрывают
               viewport (canLoop), а 3 карточки не перекрывают высокое окно. Клик по индикатору

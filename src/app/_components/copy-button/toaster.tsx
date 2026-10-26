@@ -1,13 +1,17 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import { Toaster as SonnerToaster, toast } from "sonner";
 
 export function notify(message: string) {
   toast(message);
 }
 
+// Портал в body: sonner рендерит регион-section даже без тостов, и внутри
+// flex-родителя кнопки (пункт контактов) он получал gap — лишние 8px высоты.
+// Сервер этот модуль не рендерит (dynamic ssr: false), document есть всегда
 export function Toaster() {
-  return (
+  return createPortal(
     <SonnerToaster
       containerAriaLabel="Уведомления"
       position="bottom-center"
@@ -20,6 +24,7 @@ export function Toaster() {
         },
         unstyled: true,
       }}
-    />
+    />,
+    document.body
   );
 }

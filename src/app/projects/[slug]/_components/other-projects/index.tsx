@@ -13,7 +13,7 @@ export function OtherProjects({ currentSlug }: OtherProjectsProps) {
 
   return (
     <section aria-labelledby={headingId} className="flex flex-col gap-4">
-      <h2 className="font-medium text-sm" id={headingId}>
+      <h2 className="font-medium text-sm max-lg:px-2" id={headingId}>
         Другие проекты
       </h2>
       <ul className="flex gap-2">
