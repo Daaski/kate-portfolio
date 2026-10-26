@@ -2,16 +2,21 @@ import { render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
 import { Greeting } from ".";
 
-test("greets with the level-one heading", () => {
+test("names Kate and her role in the level-one heading", () => {
   render(<Greeting />);
   expect(
-    screen.getByRole("heading", { level: 1, name: "Привет" })
+    screen.getByRole("heading", {
+      level: 1,
+      name: "Немова Екатерина UX/UI-дизайнер",
+    })
   ).toBeDefined();
 });
 
-test("introduces Kate with the highlighted role", () => {
+test("describes what Kate does under the heading", () => {
   render(<Greeting />);
   expect(
-    screen.getByText("Екатерина, я UX/UI-дизайнер с опытом 2+ лет.")
+    screen.getByText(
+      "Помогаю продуктам расти через понятный интерфейс, нахожу, где пользователи теряются, проверяю гипотезы и довожу решения до релиза. Работаю с B2B и B2C, web и mobile."
+    )
   ).toBeDefined();
 });
