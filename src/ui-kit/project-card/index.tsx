@@ -1,19 +1,26 @@
 import { cx } from "class-variance-authority";
 import Image, { type StaticImageData } from "next/image";
-import Link from "next/link";
-import { useId } from "react";
+import { useId, type ViewTransitionProps } from "react";
+import type { PreloadImage } from "@/lib/preload-image";
 import { Card } from "@/ui-kit/card";
+import { MorphCover, MorphLink } from "@/ui-kit/morph-link";
 
 interface ProjectCardProps {
   className?: string;
   cover: { alt: string; src: StaticImageData };
+  /** Морф обложки при переходе по карточке. */
+  coverTransition?: ViewTransitionProps;
   description: string;
   eager?: boolean;
   href: string;
   /** Ширина картинки в вёрстке для next/image: её знает место, где стоит карточка. */
   sizes: string;
   tag: string;
+  /** Картинка страницы назначения: грузится заранее, пока пользователь наводит или переходит. */
+  targetImage?: PreloadImage;
   title: string;
+  /** Типы навигации для view transitions — проп transitionTypes у next/link. */
+  transitionTypes?: string[];
 }
 
 export function ProjectCard({
@@ -21,10 +28,13 @@ export function ProjectCard({
   title,
   description,
   cover,
+  coverTransition,
   sizes,
   href,
   className,
   eager = false,
+  targetImage,
+  transitionTypes,
 }: ProjectCardProps) {
   const titleId = useId();
   const descriptionId = useId();
@@ -32,24 +42,28 @@ export function ProjectCard({
   return (
     // Без aria-labelledby доступное имя ссылки собралось бы из всего содержимого: alt, тег,
     // заголовок, описание. rounded-2xl — чтобы обводка фокуса повторяла углы карточки.
-    <Link
+    <MorphLink
       aria-describedby={descriptionId}
       aria-labelledby={titleId}
       className={cx("group block rounded-2xl", className)}
       href={href}
+      targetImage={targetImage}
+      transitionTypes={transitionTypes}
     >
       {/* isolate + -z-10: обложка лежит под тегом и текстом, градиент (before:) — между ними. */}
       <Card className="isolate h-100 sm:aspect-4/5 sm:h-auto">
         <div className="absolute inset-x-7.25 inset-y-19.5 -z-10 flex items-center justify-center lg:inset-x-7.5 lg:inset-y-20">
           {/* Chrome пишет в Issues «Lazy-loaded images should have explicit dimensions»: h-auto w-auto
               перебивают width/height. Сдвига вёрстки нет — блок абсолютный. */}
-          <Image
-            alt={cover.alt}
-            className="h-auto max-h-full w-auto max-w-full rounded-2xl border-2 border-border-inverse shadow-xl lg:rounded-3xl"
-            loading={eager ? "eager" : "lazy"}
-            sizes={sizes}
-            src={cover.src}
-          />
+          <MorphCover transition={coverTransition}>
+            <Image
+              alt={cover.alt}
+              className="h-auto max-h-full w-auto max-w-full rounded-2xl border-2 border-border-inverse shadow-xl lg:rounded-3xl"
+              loading={eager ? "eager" : "lazy"}
+              sizes={sizes}
+              src={cover.src}
+            />
+          </MorphCover>
         </div>
         <p className="p-4 font-medium text-fg-tertiary text-xs lg:p-6">{tag}</p>
         {/* Градиент — слой before: с opacity: background-image не анимируется, переключался бы скачком. */}
@@ -74,6 +88,6 @@ export function ProjectCard({
           </div>
         </div>
       </Card>
-    </Link>
+    </MorphLink>
   );
 }

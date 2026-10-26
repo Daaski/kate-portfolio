@@ -12,6 +12,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { onSiteNavigation } from "@/lib/on-site-navigation";
 import { DESKTOP, nearestSlide } from "./utils";
 
 // Ширины слайда зашиты в SLIDE_SIZES (utils.ts) — меняются вместе.
@@ -53,6 +54,11 @@ export function ProjectsCarousel({
     ]
   );
   const [selected, setSelected] = useState(0);
+  // Пока идёт переход по карточке, ленту не нажать: у каждого проекта две копии, и клик по второй
+  // дал бы второй обложке то же имя морфа.
+  const [leaving, setLeaving] = useState(false);
+
+  useEffect(() => onSiteNavigation(() => setLeaving(true)), []);
 
   const count = Children.count(children);
 
@@ -105,7 +111,12 @@ export function ProjectsCarousel({
       >
         {/* touch-action по оси: жест вдоль ленты — Embla, поперёк — браузеру.
             max-lg: — классы touch-pan-* в Tailwind складываются, а не заменяют друг друга. */}
-        <div className="flex touch-pinch-zoom max-lg:touch-pan-y lg:h-full lg:touch-pan-x lg:flex-col">
+        <div
+          className={cx(
+            "flex touch-pinch-zoom max-lg:touch-pan-y lg:h-full lg:touch-pan-x lg:flex-col",
+            leaving && "pointer-events-none"
+          )}
+        >
           {/* Промежуток (8 ниже sm, 16 с sm) — паддингом слайдов (так Embla советует для loop), симметричным,
               чтобы карточка центрировалась точно. */}
           {/* Копии нужны для loop: Embla включает его, только если остальные слайды перекрывают

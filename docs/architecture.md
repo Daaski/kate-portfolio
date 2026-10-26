@@ -89,3 +89,11 @@ Ultracite включает правило Biome `performance/noBarrelFile`: им
   ```
 
 - **Проверка — на `bun run build`**, dev делит чанки иначе: код библиотеки ищется grep по `out/_next/static/chunks` — чанк один, и `out/index.html` на него не ссылается.
+
+## Переходы между страницами
+
+- Навигация анимируется React `<ViewTransition>` поверх браузерного View Transitions API (гайд Next — `node_modules/next/dist/docs/01-app/02-guides/view-transitions.md`). Без поддержки API навигация мгновенная.
+- Содержимое каждой страницы — в `<ViewTransition {...pageTransition}>` в её `page.tsx`, не в layout: layout между навигациями не пересоздаётся, enter/exit в нём не срабатывают.
+- Анимируются только ссылки сайта: `transitionTypes={navTypes}` у `Link` и в `router.push`. Кнопки и свайпы браузера типа не несут — страница меняется мгновенно: на телефонах свайп анимирует сам браузер. Новая внутренняя ссылка получает `navTypes`.
+- Общий элемент двух страниц (морф) — пара `<ViewTransition>` с одним `name`; пропсы пар, обёрток и типы — из `src/lib/view-transition.ts`. У цели имя есть всегда, у источника — только с момента навигации по нему: одинаковых источников на странице бывает несколько, а одинаковые имена React не допускает. Картинку цели источник грузит заранее (`preloadImage`): `next/image` не даёт React дождаться её загрузки. Источник — `MorphLink` с `MorphCover` вокруг картинки (`ui-kit/morph-link`): они дают имя и грузят картинку цели, а сама карточка остаётся серверной.
+- Анимации — CSS-псевдоэлементами `::view-transition-*` в `globals.css`: классами Tailwind их не задать.

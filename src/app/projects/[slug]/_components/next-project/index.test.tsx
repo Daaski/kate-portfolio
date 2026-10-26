@@ -1,6 +1,8 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { LinkStub, morphName as nameOf } from "@/lib/test-utils";
+import { nextProjectTypes } from "@/lib/view-transition";
 import { NextProject } from ".";
 
 // useRouter без смонтированного App Router падает — в jsdom его нет.
@@ -54,6 +56,11 @@ vi.mock("motion/react", async (importOriginal) => ({
 
 const PREVIEW = "Превью следующего кейса";
 
+const NAVIGATION = [
+  "/projects/sfera",
+  { transitionTypes: nextProjectTypes },
+] as const;
+
 let frames: FrameRequestCallback[] = [];
 let top = 0;
 let buttonBottom = 0;
@@ -61,9 +68,11 @@ let buttonBottom = 0;
 const scroll = (to: number) => {
   top = to;
   window.dispatchEvent(new Event("scroll"));
-  for (const callback of frames.splice(0)) {
-    callback(0);
-  }
+  act(() => {
+    for (const callback of frames.splice(0)) {
+      callback(0);
+    }
+  });
 };
 
 const stopAt = (bottom: number) => {
@@ -89,7 +98,7 @@ function layout(viewport: number, zone: number, block: number) {
 
 function renderNextProject() {
   render(
-    <NextProject href="/projects/sfera">
+    <NextProject slug="sfera">
       <p>{PREVIEW}</p>
     </NextProject>
   );
@@ -168,7 +177,7 @@ test("navigates once when the user scrolls from the button to the end", () => {
   scroll(end);
   scroll(end);
   expect(router.push).toHaveBeenCalledTimes(1);
-  expect(router.push).toHaveBeenCalledWith("/projects/sfera");
+  expect(router.push).toHaveBeenCalledWith(...NAVIGATION);
 });
 
 test("does not navigate before the end of the zone", () => {
@@ -186,7 +195,7 @@ test("navigates in a viewport lower than the block", () => {
   stopAt(280);
   scroll(line);
   scroll(end);
-  expect(router.push).toHaveBeenCalledWith("/projects/sfera");
+  expect(router.push).toHaveBeenCalledWith(...NAVIGATION);
 });
 
 test("finishes the progress before navigating on click", () => {
@@ -201,7 +210,7 @@ test("finishes the progress before navigating on click", () => {
   expect(motion.preview).toEqual({ translate: ["0 50%", "0 0%"] });
   act(() => motion.complete?.());
   expect(router.push).toHaveBeenCalledTimes(1);
-  expect(router.push).toHaveBeenCalledWith("/projects/sfera");
+  expect(router.push).toHaveBeenCalledWith(...NAVIGATION);
 });
 
 test("fills from zero when clicked before the zone opens", () => {
@@ -251,5 +260,53 @@ test("navigates at once with reduced motion", () => {
   renderNextProject();
   expect(click()).toBe(true);
   expect(motion.fill).toBeUndefined();
-  expect(router.push).toHaveBeenCalledWith("/projects/sfera");
+  expect(router.push).toHaveBeenCalledWith(...NAVIGATION);
+});
+
+const morphName = () => nameOf(screen.getByText(PREVIEW));
+
+// Имя морфа — прямо перед навигацией: во время доезда мини-карточка этого же проекта
+// в «Других проектах» ещё может получить то же имя.
+test("names the preview for the morph when the finish ends", () => {
+  const { line, middle } = layout(768, 1536, 476);
+  renderNextProject();
+  stopAt(700);
+  scroll(line);
+  scroll(middle);
+  click();
+  expect(morphName()).toBeNull();
+  act(() => motion.complete?.());
+  expect(morphName()).toBe("project-sfera");
+});
+
+test("names the preview for the morph when scrolled to the end", () => {
+  const { line, end } = layout(768, 1536, 476);
+  renderNextProject();
+  stopAt(700);
+  scroll(line);
+  expect(morphName()).toBeNull();
+  scroll(end);
+  expect(morphName()).toBe("project-sfera");
+});
+
+// Мини-карточка этого же проекта, нажатая во время заливки, уже увела навигацию и забрала имя морфа.
+test("does not navigate or name the preview after another site link took over", () => {
+  const { line, middle } = layout(768, 1536, 476);
+  render(
+    <>
+      <NextProject slug="sfera">
+        <p>{PREVIEW}</p>
+      </NextProject>
+      {/* Гасит клик, как next/link при навигации внутри сайта. */}
+      <LinkStub href="/projects/sfera">Мини-карточка</LinkStub>
+    </>
+  );
+  stopAt(700);
+  scroll(line);
+  scroll(middle);
+  click();
+  fireEvent.click(screen.getByRole("link", { name: "Мини-карточка" }));
+  act(() => motion.complete?.());
+  expect(router.push).not.toHaveBeenCalled();
+  expect(morphName()).toBeNull();
 });

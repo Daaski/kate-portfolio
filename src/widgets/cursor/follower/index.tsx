@@ -123,12 +123,13 @@ export function Follower() {
   return (
     <LazyMotion features={domAnimation}>
       {/* difference на общем слое: белое инвертирует всё под собой, тёмный текст плашки почти
-          не меняет — буквы показывают исходные цвета. Слой 0×0 в углу окна, его двигают x/y. */}
+          не меняет — буквы показывают исходные цвета. Слой 0×0 в углу окна, его двигают x/y.
+          view-transition-name — свой слой, который globals.css прячет на время перехода между страницами: иначе застывшая копия точки осталась бы в снимке страницы. */}
       <MotionDiv
         aria-hidden="true"
         // will-change: x/y пишутся на каждое движение мыши, такой transform motion считает в главном
         // потоке — без отдельного слоя браузер перерисовывал бы страницу под точкой.
-        className="pointer-events-none fixed top-0 left-0 z-50 mix-blend-difference will-change-transform"
+        className="pointer-events-none fixed top-0 left-0 z-50 mix-blend-difference will-change-transform [view-transition-name:cursor]"
         // Координаты курсора — не дизайн-значение, классом их не задать.
         style={{ x, y }}
       >
